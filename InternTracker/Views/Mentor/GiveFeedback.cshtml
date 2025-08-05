@@ -1,0 +1,58 @@
+@model InternTracker.Models.Report
+
+@{ 
+    ViewData["Title"] = "Give Feedback";
+}
+
+<h1>Give Feedback for @Model.User.Username's Report</h1>
+
+<div>
+    <h4>Report Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Submitted By
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.User.Username)
+        </dd>
+        <dt class="col-sm-2">
+            Submission Date
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubmissionDate)
+        </dd>
+        <dt class="col-sm-2">
+            Intern's Feedback
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Feedback)
+        </dd>
+        <dt class="col-sm-2">
+            Report File
+        </dt>
+        <dd class="col-sm-10">
+            <a href="@Model.FilePath" target="_blank">Download Report</a>
+        </dd>
+    </dl>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="GiveFeedback">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label for="mentorFeedback" class="control-label">Mentor Feedback</label>
+                <textarea name="mentorFeedback" class="form-control" rows="5">@Model.MentorFeedback</textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save Feedback" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ViewInternDetails" asp-route-id="@Model.UserId">Back to Intern Details</a>
+</div>

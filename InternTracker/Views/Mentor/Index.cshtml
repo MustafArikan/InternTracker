@@ -1,0 +1,40 @@
+@model IEnumerable<AppUser>
+
+@{
+    ViewData["Title"] = "Mentor Dashboard";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>My Interns</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                <a asp-action="ViewInternDetails" asp-route-id="@item.Id">View Details</a> |
+                <a asp-action="AssignTask" asp-route-id="@item.Id">Assign Task</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

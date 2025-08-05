@@ -1,0 +1,37 @@
+@model InternTracker.Models.ResourceFile
+
+@{
+    ViewData["Title"] = "Upload Resource File";
+}
+
+<h2>Upload Resource File</h2>
+
+<h4>ResourceFile</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UploadResourceFile" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="file" class="control-label">Select File</label>
+                <input type="file" name="file" id="file" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ResourceFiles">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

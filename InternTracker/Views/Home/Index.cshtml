@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-12 text-center">
+            <img src="~/lib/Pictures/IT.png" alt="InternTrack Logo" style="max-width: 512px; width: 100%;" class="mb-3" />
+            <h1 class="fw-bold" style="font-size: 2.5rem;">InternTracker</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8 col-lg-6 text-center">
+            <p class="lead">
+                <strong>InternTracker</strong> is a modern internship tracking and mentorship platform built with ASP.NET MVC and Entity Framework. Designed for admins, mentors, and interns, it streamlines internship management, task assignments, reporting, and feedback—all in one place. Track your progress, set goals, log your learning, and access shared resources with a clean, user-friendly interface. Experience a smarter way to manage internships, built for real-world needs.
+            </p>
+        </div>
+    </div>
+</div>

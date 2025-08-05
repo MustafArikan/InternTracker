@@ -1,0 +1,46 @@
+@model InternTracker.Models.Goal
+
+@{
+    ViewData["Title"] = "Edit Goal";
+}
+
+<h2>Edit Goal</h2>
+
+<h4>Goal</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditGoal">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <div class="form-group">
+                <label asp-for="GoalTitle" class="control-label"></label>
+                <input asp-for="GoalTitle" class="form-control" readonly />
+                <span asp-validation-for="GoalTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<GoalStatus>()"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReflectionText" class="control-label"></label>
+                <textarea asp-for="ReflectionText" class="form-control"></textarea>
+                <span asp-validation-for="ReflectionText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Goals">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,43 @@
+@model InternTracker.Models.Report
+
+@{
+    ViewData["Title"] = "Edit Report";
+}
+
+<h2>Edit Report</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditReport" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Feedback" class="control-label"></label>
+                <textarea asp-for="Feedback" class="form-control"></textarea>
+                <span asp-validation-for="Feedback" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Current File</label>
+                <div>
+                    <a href="@Model.FilePath" target="_blank">View Current Report</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reportFile" class="control-label">Upload New File (Optional)</label>
+                <input type="file" id="reportFile" name="reportFile" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Reports">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

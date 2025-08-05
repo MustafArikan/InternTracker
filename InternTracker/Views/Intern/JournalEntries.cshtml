@@ -1,0 +1,40 @@
+@model IEnumerable<InternTracker.Models.JournalEntry>
+
+@{
+    ViewData["Title"] = "Journal Entries";
+}
+
+<h2>Journal Entries</h2>
+
+<p>
+    <a asp-action="CreateJournalEntry">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryText)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryText)
+            </td>
+            <td>
+                <a asp-action="EditJournalEntry" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="DeleteJournalEntry" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

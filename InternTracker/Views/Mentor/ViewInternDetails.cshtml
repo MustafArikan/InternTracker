@@ -1,0 +1,299 @@
+@model InternTracker.Models.InternDetailsViewModel
+
+@{
+    ViewData["Title"] = "Intern Details";
+}
+
+<h1>Intern Details</h1>
+
+<div>
+    <h4>Intern Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Intern.Username)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Intern.Username)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Intern.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Intern.Email)
+        </dd>
+    </dl>
+</div>
+
+<hr />
+
+<div>
+    <h4>Tasks</h4>
+    <p>
+        <a asp-action="AssignTask" asp-route-id="@Model.Intern.Id" class="btn btn-sm btn-success">Assign New Task</a>
+    </p>
+
+    @if (Model.Tasks.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Tasks.First().Title)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Tasks.First().Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Tasks.First().AssignedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Tasks.First().Status)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in Model.Tasks)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => task.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => task.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => task.AssignedDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => task.Status)
+                        </td>
+                        <td>
+                            <a asp-action="EditTask" asp-route-id="@task.Id">Edit</a> |
+                            <a asp-action="DeleteTask" asp-route-id="@task.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No tasks assigned to this intern yet.</p>
+    }
+</div>
+
+<hr />
+
+
+<div>
+    <h4>Journal Entries</h4>
+    @if (Model.JournalEntries.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.JournalEntries.First().Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.JournalEntries.First().EntryText)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in Model.JournalEntries)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => entry.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => entry.EntryText)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No journal entries found.</p>
+    }
+</div>
+
+<hr />
+
+<div>
+    <h4>Goals</h4>
+    @if (Model.Goals.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Goals.First().GoalTitle)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Goals.First().CreatedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Goals.First().Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Goals.First().ReflectionText)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var goal in Model.Goals)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => goal.GoalTitle)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => goal.CreatedDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => goal.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => goal.ReflectionText)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No goals found.</p>
+    }
+</div>
+
+<hr />
+
+<div>
+    <h4>Work Sessions</h4>
+    @if (Model.WorkSessions.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WorkSessions.First().StartTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WorkSessions.First().EndTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WorkSessions.First().TotalMinutes)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var session in Model.WorkSessions)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => session.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => session.EndTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => session.TotalMinutes)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No work sessions found.</p>
+    }
+</div>
+
+<hr />
+
+<div>
+    <h4>Reports</h4>
+    @if (Model.Reports.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Reports.First().SubmissionDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Reports.First().Feedback)
+                    </th>
+                    <th>
+                        File
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var report in Model.Reports)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => report.SubmissionDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => report.Feedback)
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(report.FilePath))
+                            {
+                                <a href="@report.FilePath" target="_blank">View Report</a>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="GiveFeedback" asp-route-id="@report.Id">Give Feedback</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No reports found.</p>
+    }
+</div>
+
+<hr />
+
+<div>
+    <h4>Notifications</h4>
+    @if (Model.Notifications.Any())
+    {
+        <ul class="list-group">
+            @foreach (var notification in Model.Notifications)
+            {
+                <li class="list-group-item">
+                    @notification.Message
+                    <small class="text-muted"> - @notification.CreatedAt.ToString("g")</small>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No notifications found.</p>
+    }
+</div>
+
+
+
+<div>
+    <a asp-action="Index">Back to Intern List</a>
+</div>

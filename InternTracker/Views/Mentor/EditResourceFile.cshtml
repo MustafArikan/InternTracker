@@ -1,0 +1,45 @@
+@model InternTracker.Models.ResourceFile
+
+@{
+    ViewData["Title"] = "Edit Resource File";
+}
+
+<h1>Edit Resource File</h1>
+
+<h4>ResourceFile</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditResourceFile">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="FilePath" />
+            <input type="hidden" asp-for="UploadDate" />
+            <input type="hidden" asp-for="UploadedByUserId" />
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">File</label>
+                <p><a href="@Model.FilePath" target="_blank">Download Current File</a></p>
+                <i>File content cannot be edited. To change the file, please upload a new resource.</i>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ResourceFiles">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

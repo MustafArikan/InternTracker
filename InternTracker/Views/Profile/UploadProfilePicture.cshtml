@@ -1,0 +1,35 @@
+@model InternTracker.Models.UploadProfilePictureViewModel
+
+@{ 
+    ViewData["Title"] = "Upload Profile Picture";
+}
+
+<h1>Upload Profile Picture</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UploadProfilePicture" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ProfilePicture" class="control-label"></label>
+                <input asp-for="ProfilePicture" type="file" class="form-control" />
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success mt-3">@ViewBag.Message</div>
+            }
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Profile</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

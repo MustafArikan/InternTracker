@@ -1,0 +1,52 @@
+@model IEnumerable<InternTracker.Models.Report>
+
+@{
+    ViewData["Title"] = "My Reports";
+}
+
+<h2>My Reports</h2>
+
+<p>
+    <a asp-action="SubmitReport">Submit New Report</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmissionDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilePath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedback)
+            </th>
+            <th>
+                Mentor Feedback
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubmissionDate)
+            </td>
+            <td>
+                <a href="@item.FilePath" target="_blank">View Report</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Feedback)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MentorFeedback)
+            </td>
+            <td>
+                <a asp-action="EditReport" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="DeleteReport" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

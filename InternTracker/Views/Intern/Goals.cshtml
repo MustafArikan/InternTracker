@@ -1,0 +1,52 @@
+@model IEnumerable<InternTracker.Models.Goal>
+
+@{
+    ViewData["Title"] = "My Goals";
+}
+
+<h2>My Goals</h2>
+
+<p>
+    <a asp-action="CreateGoal">Create New Goal</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.GoalTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReflectionText)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.GoalTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReflectionText)
+            </td>
+            <td>
+                <a asp-action="EditGoal" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="DeleteGoals" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

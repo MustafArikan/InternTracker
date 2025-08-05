@@ -1,0 +1,167 @@
+using InternTracker.Data;
+using InternTracker.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using BCrypt.Net;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+
+namespace InternTracker.Controllers
+{
+    public class ProfileController : Controller
+    {
+        private readonly InternTrackerContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
+
+        public ProfileController(InternTrackerContext context, IWebHostEnvironment hostEnvironment)
+        {
+            _context = context;
+            _hostEnvironment = hostEnvironment;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _context.AppUsers.FindAsync(userId.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _context.AppUsers.FindAsync(userId.Value);
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.PasswordHash))
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid current password.");
+                    return View(model);
+                }
+
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+                _context.AppUsers.Update(user);
+                await _context.SaveChangesAsync();
+
+                ViewBag.Message = "Password changed successfully!";
+                return View();
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult UpdateEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateEmail(UpdateEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _context.AppUsers.FindAsync(userId.Value);
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid password.");
+                    return View(model);
+                }
+
+                var existingUserWithEmail = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == model.NewEmail);
+                if (existingUserWithEmail != null && existingUserWithEmail.Id != user.Id)
+                {
+                    ModelState.AddModelError("NewEmail", "This email is already in use.");
+                    return View(model);
+                }
+
+                user.Email = model.NewEmail;
+                _context.AppUsers.Update(user);
+                await _context.SaveChangesAsync();
+
+                ViewBag.Message = "Email updated successfully!";
+                return View();
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult UploadProfilePicture()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadProfilePicture(UploadProfilePictureViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _context.AppUsers.FindAsync(userId.Value);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "images");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfilePicture.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    // Delete old profile picture if it exists and is not the default
+                    if (!string.IsNullOrEmpty(user.ProfilePicturePath) && user.ProfilePicturePath != "/images/default-profile.png")
+                    {
+                        var oldFilePath = Path.Combine(_hostEnvironment.WebRootPath, user.ProfilePicturePath.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ProfilePicture.CopyToAsync(fileStream);
+                    }
+
+                    user.ProfilePicturePath = "/images/" + uniqueFileName;
+                    _context.AppUsers.Update(user);
+                    await _context.SaveChangesAsync();
+
+                    ViewBag.Message = "Profile picture uploaded successfully!";
+                    return View();
+                }
+                ModelState.AddModelError(string.Empty, "Please select a file to upload.");
+            }
+            return View(model);
+        }
+    }
+}

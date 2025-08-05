@@ -1,0 +1,168 @@
+@model InternTracker.Models.SystemReportsViewModel
+
+@{ 
+    ViewData["Title"] = "System Reports";
+}
+
+<h1>System Reports</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>User Statistics</h4>
+        <hr />
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Statistic</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Users</td>
+                    <td>@Html.DisplayFor(model => model.TotalUsers)</td>
+                </tr>
+                <tr>
+                    <td>Total Interns</td>
+                    <td>@Html.DisplayFor(model => model.TotalInterns)</td>
+                </tr>
+                <tr>
+                    <td>Total Mentors</td>
+                    <td>@Html.DisplayFor(model => model.TotalMentors)</td>
+                </tr>
+                <tr>
+                    <td>Total Admins</td>
+                    <td>@Html.DisplayFor(model => model.TotalAdmins)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>User Role Distribution</h4>
+        <canvas id="userRoleChart" style="max-width: 300px; max-height: 300px;"></canvas>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h4>Resource Uploads by Role</h4>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Uploads</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mentor Uploads</td>
+                    <td>@Html.DisplayFor(model => model.TotalMentorUploads)</td>
+                </tr>
+                <tr>
+                    <td>Admin Uploads</td>
+                    <td>@Html.DisplayFor(model => model.TotalAdminUploads)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>Resource Uploads by Role</h4>
+        <canvas id="resourceUploadHorizontalChart" style="max-width: 500px; max-height: 300px;"></canvas>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to User Management</a>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/chart.umd.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctxUserRole = document.getElementById('userRoleChart').getContext('2d');
+            var userRoleChart = new Chart(ctxUserRole, {
+                type: 'pie',
+                data: {
+                    labels: ['Total Users', 'Total Interns', 'Total Mentors', 'Total Admins'],
+                    datasets: [{
+                        label: '# of Users',
+                        data: [@Model.TotalUsers, @Model.TotalInterns, @Model.TotalMentors, @Model.TotalAdmins],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'User Role Distribution'
+                        }
+                    }
+                }
+            });
+
+            var ctxResourceUploadHorizontal = document.getElementById('resourceUploadHorizontalChart').getContext('2d');
+            var resourceUploadHorizontalChart = new Chart(ctxResourceUploadHorizontal, {
+                type: 'bar',
+                data: {
+                    labels: ['Mentor Uploads', 'Admin Uploads'],
+                    datasets: [{
+                        label: 'Number of Uploads',
+                        data: [@Model.TotalMentorUploads, @Model.TotalAdminUploads],
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', 
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Resource Uploads by Role'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: Math.max(5, @Model.TotalMentorUploads, @Model.TotalAdminUploads),
+                            ticks: {
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

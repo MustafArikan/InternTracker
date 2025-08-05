@@ -1,0 +1,53 @@
+@model IEnumerable<InternTracker.Models.ResourceFile>
+
+@{
+    ViewData["Title"] = "Manage Resource Files";
+}
+
+<h2>Manage Resource Files</h2>
+
+<p>
+    <a asp-action="UploadResourceFile">Upload New Resource File</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilePath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UploadDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UploadedByUser.Username)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                <a href="@item.FilePath" target="_blank">Download File</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UploadDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UploadedByUser.Username)
+            </td>
+            <td>
+                <a asp-action="EditResourceFile" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="DeleteResourceFile" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
