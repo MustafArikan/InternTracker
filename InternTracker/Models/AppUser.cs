@@ -18,6 +18,7 @@ namespace InternTracker.Models
         public string PasswordHash { get; set; }
         [Required]
         public UserRole Role { get; set; }
-        public string ProfilePicturePath { get; set; } //optional can be null
+        public string ProfilePicturePath { get; set; } 
+        public DateTime RegistrationDate { get; set; }
     }
 }

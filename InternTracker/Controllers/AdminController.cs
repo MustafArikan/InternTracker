@@ -319,8 +319,24 @@ namespace InternTracker.Controllers
             return View(resourceFile);
         }
 
-        public async Task<IActionResult> SystemReports()
+        public async Task<IActionResult> SystemReports(DateTime? startDate)
         {
+            if (!startDate.HasValue)
+            {
+                startDate = new DateTime(2025, 7, 28); 
+            }
+
+            IQueryable<AppUser> usersQuery = _context.AppUsers.Where(u => u.RegistrationDate >= startDate.Value);
+
+            var registrationData = await usersQuery
+                .GroupBy(u => new { u.RegistrationDate.Year, u.RegistrationDate.Month, u.RegistrationDate.Day })
+                .Select(g => new { Year = g.Key.Year, Month = g.Key.Month, Day = g.Key.Day, Count = g.Count() })
+                .OrderBy(x => x.Year).ThenBy(x => x.Month).ThenBy(x => x.Day)
+                .ToListAsync();
+
+            var formattedRegistrationDates = registrationData.Select(x => new DateTime(x.Year, x.Month, x.Day).ToString("dd MMM yyyy")).ToList();
+            var registrationCounts = registrationData.Select(x => x.Count).ToList();
+
             var viewModel = new SystemReportsViewModel
             {
                 TotalUsers = await _context.AppUsers.CountAsync(),
@@ -329,6 +345,8 @@ namespace InternTracker.Controllers
                 TotalAdmins = await _context.AppUsers.CountAsync(u => u.Role == UserRole.Admin),
                 TotalMentorUploads = await _context.ResourceFiles.Include(r => r.UploadedByUser).CountAsync(r => r.UploadedByUser.Role == UserRole.Mentor),
                 TotalAdminUploads = await _context.ResourceFiles.Include(r => r.UploadedByUser).CountAsync(r => r.UploadedByUser.Role == UserRole.Admin),
+                RegistrationDates = formattedRegistrationDates,
+                RegistrationCounts = registrationCounts
             };
             return View(viewModel);
         }

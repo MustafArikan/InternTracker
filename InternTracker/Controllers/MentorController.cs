@@ -379,5 +379,101 @@ namespace InternTracker.Controllers
 
             return RedirectToAction(nameof(ViewInternDetails), new { id = reportToUpdate.UserId });
         }
+
+        public async Task<IActionResult> InternProgressDashboard(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var intern = await _context.AppUsers.FindAsync(id);
+            if (intern == null || intern.Role != UserRole.Intern)
+            {
+                return NotFound();
+            }
+
+            var tasks = await _context.TaskItems.Where(t => t.AssignedToUserId == id).ToListAsync();
+            var journalEntries = await _context.JournalEntries.Where(j => j.UserId == id).ToListAsync();
+            var goals = await _context.Goals.Where(g => g.UserId == id).ToListAsync();
+            var reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync();
+            var workSessions = await _context.WorkSessions.Where(ws => ws.UserId == id).ToListAsync();
+            var notifications = await _context.Notifications.Where(n => n.UserId == id).ToListAsync();
+
+            // Prepare data for charts
+            var taskStatusCounts = tasks.GroupBy(t => t.Status)
+                                        .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                        .ToList();
+
+            var goalStatusCounts = goals.GroupBy(g => g.Status)
+                                      .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                      .ToList();
+
+            var workSessionDailyMinutes = workSessions.GroupBy(ws => ws.StartTime.Date)
+                                                    .Select(g => new { Date = g.Key, TotalMinutes = g.Sum(ws => ws.TotalMinutes) })
+                                                    .OrderBy(x => x.Date)
+                                                    .ToList();
+
+            var journalEntryDailyCounts = journalEntries.GroupBy(je => je.Date.Date)
+                                                        .Select(g => new { Date = g.Key, Count = g.Count() })
+                                                        .OrderBy(x => x.Date)
+                                                        .ToList();
+
+            var reportSubmissionDailyCounts = reports.GroupBy(r => r.SubmissionDate.Date)
+                                                    .Select(g => new { Date = g.Key, Count = g.Count() })
+                                                    .OrderBy(x => x.Date)
+                                                    .ToList();
+
+            // Prepare activity logs
+            var activityLogs = new List<string>();
+            foreach (var task in tasks.OrderByDescending(t => t.AssignedDate))
+            {
+                activityLogs.Add($"Task '{task.Title}' assigned on {task.AssignedDate.ToShortDateString()} with status {task.Status}.");
+            }
+            foreach (var journal in journalEntries.OrderByDescending(j => j.Date))
+            {
+                activityLogs.Add($"Journal entry on {journal.Date.ToShortDateString()}: {journal.EntryText.Substring(0, Math.Min(journal.EntryText.Length, 50))}...");
+            }
+            foreach (var report in reports.OrderByDescending(r => r.SubmissionDate))
+            {
+                activityLogs.Add($"Report submitted on {report.SubmissionDate.ToShortDateString()}.");
+            }
+            foreach (var ws in workSessions.OrderByDescending(ws => ws.StartTime))
+            {
+                activityLogs.Add($"Work session logged from {ws.StartTime.ToShortTimeString()} to {ws.EndTime.ToShortTimeString()} on {ws.StartTime.ToShortDateString()} ({ws.TotalMinutes} minutes).");
+            }
+            // Add more activity types as needed
+            activityLogs = activityLogs.OrderByDescending(a => a).ToList(); // Simple chronological sort
+
+            var viewModel = new InternProgressDashboardViewModel
+            {
+                Intern = intern,
+                Tasks = tasks,
+                JournalEntries = journalEntries,
+                Goals = goals,
+                Reports = reports,
+                WorkSessions = workSessions,
+                Notifications = notifications,
+
+                TaskStatusLabels = taskStatusCounts.Select(x => x.Status).ToList(),
+                TaskStatusCounts = taskStatusCounts.Select(x => x.Count).ToList(),
+
+                GoalStatusLabels = goalStatusCounts.Select(x => x.Status).ToList(),
+                GoalStatusCounts = goalStatusCounts.Select(x => x.Count).ToList(),
+
+                WorkSessionDates = workSessionDailyMinutes.Select(x => x.Date.ToShortDateString()).ToList(),
+                WorkSessionMinutes = workSessionDailyMinutes.Select(x => x.TotalMinutes).ToList(),
+
+                JournalEntryDates = journalEntryDailyCounts.Select(x => x.Date.ToShortDateString()).ToList(),
+                JournalEntryCounts = journalEntryDailyCounts.Select(x => x.Count).ToList(),
+
+                ReportSubmissionDates = reportSubmissionDailyCounts.Select(x => x.Date.ToShortDateString()).ToList(),
+                ReportSubmissionCounts = reportSubmissionDailyCounts.Select(x => x.Count).ToList(),
+
+                ActivityLogs = activityLogs
+            };
+
+            return View(viewModel);
+        }
     }
 }

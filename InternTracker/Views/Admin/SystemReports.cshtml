@@ -71,6 +71,13 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h4>User Registration Trend</h4>
+        <canvas id="userRegistrationChart" style="max-width: 800px; max-height: 400px;"></canvas>
+    </div>
+</div>
+
 <div>
     <a asp-action="Index">Back to User Management</a>
 </div>
@@ -152,6 +159,46 @@
                             beginAtZero: true,
                             min: 0,
                             max: Math.max(5, @Model.TotalMentorUploads, @Model.TotalAdminUploads),
+                            ticks: {
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var ctxUserRegistration = document.getElementById('userRegistrationChart').getContext('2d');
+            var userRegistrationChart = new Chart(ctxUserRegistration, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.RegistrationDates)),
+                    datasets: [{
+                        label: 'New Registrations',
+                        data: @Html.Raw(Json.Serialize(Model.RegistrationCounts)),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'User Registration Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
                                     if (Number.isInteger(value)) {
