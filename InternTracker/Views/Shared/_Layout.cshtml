@@ -50,6 +50,9 @@
                         else if (Context.Session.GetString("Role") == "Intern")
                         {
                             <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Dashboard">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Index">My Tasks</a>
                             </li>
                             <li class="nav-item">

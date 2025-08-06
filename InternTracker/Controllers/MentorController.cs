@@ -397,7 +397,13 @@ namespace InternTracker.Controllers
             var journalEntries = await _context.JournalEntries.Where(j => j.UserId == id).ToListAsync();
             var goals = await _context.Goals.Where(g => g.UserId == id).ToListAsync();
             var reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync();
-            var workSessions = await _context.WorkSessions.Where(ws => ws.UserId == id).ToListAsync();
+            var workSessions = await _context.WorkSessions.Include(ws => ws.TaskItem).Where(ws => ws.UserId == id).ToListAsync();
+
+            // Prepare data for individual work session chart
+            var individualWorkSessions = workSessions
+                .OrderBy(ws => ws.StartTime)
+                .Select(ws => new { Label = ws.StartTime.ToString("MM/dd HH:mm"), ws.TotalMinutes })
+                .ToList();
             var notifications = await _context.Notifications.Where(n => n.UserId == id).ToListAsync();
 
             // Prepare data for charts
@@ -469,6 +475,9 @@ namespace InternTracker.Controllers
 
                 ReportSubmissionDates = reportSubmissionDailyCounts.Select(x => x.Date.ToShortDateString()).ToList(),
                 ReportSubmissionCounts = reportSubmissionDailyCounts.Select(x => x.Count).ToList(),
+
+                IndividualWorkSessionLabels = individualWorkSessions.Select(x => x.Label).ToList(),
+                IndividualWorkSessionMinutes = individualWorkSessions.Select(x => x.TotalMinutes).ToList(),
 
                 ActivityLogs = activityLogs
             };

@@ -1,7 +1,11 @@
-@model IEnumerable<TaskItem>
+@model IEnumerable<InternTracker.Models.TaskItem>
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Intern Dashboard";
+    var activeWorkSessionId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveWorkSessionId");
+    var activeTaskId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveTaskId");
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -23,7 +27,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -39,13 +43,71 @@
             <td>
                 @Html.DisplayFor(modelItem => item.AssignedDate)
             </td>
-            <td>
+            <td id="status-@item.Id">
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                @if (activeWorkSessionId == null)
+                {
+                    if (item.Status == InternTracker.Models.TaskStatus.NotStarted)
+                    {
+                        <a asp-action="Start" asp-route-id="@item.Id" class="btn btn-success btn-sm">Start</a>
+                    }
+                }
+                else if (activeTaskId == item.Id)
+                {
+                    <a asp-action="Stop" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Stop</a>
+                    <span id="timer-@item.Id" class="ml-2 font-weight-bold"></span>
+                }
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let timerInterval;
+        let activeTaskId = @(activeTaskId ?? 0);
+
+        function updateTimer(startTime, timerElement) {
+            const start = new Date(startTime).getTime();
+            timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = now - start;
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        if (activeTaskId > 0) {
+            const startTime = localStorage.getItem(`startTime-${activeTaskId}`);
+            if (startTime) {
+                const timerElement = document.getElementById(`timer-${activeTaskId}`);
+                if (timerElement) {
+                    updateTimer(startTime, timerElement);
+                }
+            }
+        }
+
+        document.querySelectorAll('.btn-success').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const taskId = this.href.split('/').pop();
+                localStorage.setItem(`startTime-${taskId}`, new Date().toISOString());
+            });
+        });
+
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const taskId = this.href.split('/').pop();
+                clearInterval(timerInterval);
+                localStorage.removeItem(`startTime-${taskId}`);
+            });
+        });
+    });
+    </script>
+}

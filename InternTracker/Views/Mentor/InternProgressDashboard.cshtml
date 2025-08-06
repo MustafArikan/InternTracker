@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-5">
         <div class="card">
             <div class="card-header">
                 Task Status
@@ -37,6 +37,7 @@
             </div>
         </div>
     </div>
+    <div class="col-md-3"></div>
 </div>
 
 <div class="row mt-4">
@@ -85,8 +86,8 @@
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-12">
+<div class="row mt-4 justify-content-center">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-header">
                 Activity Log
@@ -98,6 +99,23 @@
                         <li class="list-group-item">@log</li>
                     }
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+
+<div class="row mt-4 justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Individual Work Sessions (Minutes)
+            </div>
+            <div class="card-body">
+                <canvas id="individualWorkSessionChart"></canvas>
             </div>
         </div>
     </div>
@@ -267,6 +285,39 @@
                         title: {
                             display: true,
                             text: 'Report Submission Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // New Chart: Individual Work Sessions
+            var ctxIndividualWorkSession = document.getElementById('individualWorkSessionChart').getContext('2d');
+            new Chart(ctxIndividualWorkSession, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.IndividualWorkSessionLabels)),
+                    datasets: [{
+                        label: 'Minutes Logged',
+                        data: @Html.Raw(Json.Serialize(Model.IndividualWorkSessionMinutes)),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Individual Work Sessions'
                         }
                     },
                     scales: {

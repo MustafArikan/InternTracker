@@ -31,5 +31,8 @@ namespace InternTracker.Models
 
         // For Activity Log
         public List<string> ActivityLogs { get; set; }
+
+        public List<string> IndividualWorkSessionLabels { get; set; }
+        public List<int> IndividualWorkSessionMinutes { get; set; }
     }
 }
