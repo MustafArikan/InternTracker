@@ -4,6 +4,7 @@ using InternTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InternTracker.Migrations
 {
     [DbContext(typeof(InternTrackerContext))]
-    partial class InternTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20250806062811_ThirdCreate")]
+    partial class ThirdCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,7 +127,7 @@ namespace InternTracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsRead")
@@ -133,13 +136,6 @@ namespace InternTracker.Migrations
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NotificationType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RelatedEntityId")
-                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -259,9 +255,6 @@ namespace InternTracker.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TotalMinutes")
                         .HasColumnType("int");
 
@@ -269,8 +262,6 @@ namespace InternTracker.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
 
                     b.HasIndex("UserId");
 
@@ -345,17 +336,11 @@ namespace InternTracker.Migrations
 
             modelBuilder.Entity("InternTracker.Models.WorkSession", b =>
                 {
-                    b.HasOne("InternTracker.Models.TaskItem", "TaskItem")
-                        .WithMany()
-                        .HasForeignKey("TaskId");
-
                     b.HasOne("InternTracker.Models.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("TaskItem");
 
                     b.Navigation("User");
                 });

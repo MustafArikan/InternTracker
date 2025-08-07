@@ -8,5 +8,7 @@ namespace InternTracker.Models
         public int TotalAdmins { get; set; }
         public int TotalMentorUploads { get; set; }
         public int TotalAdminUploads { get; set; }
+        public List<string> RegistrationDates { get; set; }
+        public List<int> RegistrationCounts { get; set; }
     }
 }

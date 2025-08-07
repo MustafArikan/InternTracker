@@ -42,7 +42,8 @@ namespace InternTracker.Controllers
                     Email = model.Email,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
                     Role = UserRole.Intern, 
-                    ProfilePicturePath = "" 
+                    ProfilePicturePath = "",
+                    RegistrationDate = DateTime.Now
                 };
 
                 _context.AppUsers.Add(user);

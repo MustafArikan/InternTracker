@@ -273,23 +273,7 @@
 <hr />
 
 <div>
-    <h4>Notifications</h4>
-    @if (Model.Notifications.Any())
-    {
-        <ul class="list-group">
-            @foreach (var notification in Model.Notifications)
-            {
-                <li class="list-group-item">
-                    @notification.Message
-                    <small class="text-muted"> - @notification.CreatedAt.ToString("g")</small>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No notifications found.</p>
-    }
+    
 </div>
 
 

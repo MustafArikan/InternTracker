@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<InternTrackerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("InternTrackerContext")));
 builder.Services.AddDistributedMemoryCache(); // Needed for Session

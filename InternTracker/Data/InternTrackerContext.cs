@@ -12,10 +12,11 @@ namespace InternTracker.Data
         public DbSet<TaskItem> TaskItems { get; set; }
         public DbSet<Report> Reports { get; set; } 
         public DbSet<JournalEntry> JournalEntries { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
+        
         public DbSet<ResourceFile> ResourceFiles { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<WorkSession> WorkSessions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
     }
 }

@@ -50,7 +50,7 @@ namespace InternTracker.Controllers
                 Goals = await _context.Goals.Where(g => g.UserId == id).ToListAsync(),
                 Reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync(),
                 WorkSessions = await _context.WorkSessions.Where(ws => ws.UserId == id).ToListAsync(),
-                Notifications = await _context.Notifications.Where(n => n.UserId == id).ToListAsync()
+                
             };
 
             return View(viewModel);
@@ -101,6 +101,21 @@ namespace InternTracker.Controllers
                 // Add the *new* object to the context.
                 _context.Add(newTask);
                 await _context.SaveChangesAsync();
+
+                // Create a notification for the intern
+                var targetIntern = await _context.AppUsers.FindAsync(newTask.AssignedToUserId);
+                if (targetIntern != null)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = targetIntern.Id,
+                        Message = $"New task assigned: {newTask.Title}",
+                        NotificationType = "TaskAssigned",
+                        RelatedEntityId = newTask.Id
+                    };
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
+                }
 
                 // Redirect to the intern's details page.
                 return RedirectToAction(nameof(ViewInternDetails), new { id = newTask.AssignedToUserId });
@@ -194,6 +209,13 @@ namespace InternTracker.Controllers
             if (taskItem != null)
             {
                 var internId = taskItem.AssignedToUserId; // Save the intern's ID before deleting
+
+                // Find and remove all associated WorkSessions
+                var workSessionsToDelete = await _context.WorkSessions
+                    .Where(ws => ws.TaskId == id)
+                    .ToListAsync();
+                _context.WorkSessions.RemoveRange(workSessionsToDelete);
+
                 _context.TaskItems.Remove(taskItem);
                 await _context.SaveChangesAsync();
 
@@ -266,6 +288,22 @@ namespace InternTracker.Controllers
 
                 _context.Add(resourceFile);
                 await _context.SaveChangesAsync();
+
+                // Notify all interns about the new resource
+                var interns = await _context.AppUsers.Where(u => u.Role == UserRole.Intern).ToListAsync();
+                foreach (var intern in interns)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = intern.Id,
+                        Message = $"New resource uploaded by your mentor: {resourceFile.Title}",
+                        NotificationType = "ResourceUploaded",
+                        RelatedEntityId = resourceFile.Id
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(ResourceFiles));
             }
 
@@ -378,6 +416,111 @@ namespace InternTracker.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(ViewInternDetails), new { id = reportToUpdate.UserId });
+        }
+
+        public async Task<IActionResult> InternProgressDashboard(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var intern = await _context.AppUsers.FindAsync(id);
+            if (intern == null || intern.Role != UserRole.Intern)
+            {
+                return NotFound();
+            }
+
+            var tasks = await _context.TaskItems.Where(t => t.AssignedToUserId == id).ToListAsync();
+            var journalEntries = await _context.JournalEntries.Where(j => j.UserId == id).ToListAsync();
+            var goals = await _context.Goals.Where(g => g.UserId == id).ToListAsync();
+            var reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync();
+            var workSessions = await _context.WorkSessions.Include(ws => ws.TaskItem).Where(ws => ws.UserId == id).ToListAsync();
+
+            // Prepare data for individual work session chart
+            var individualWorkSessions = workSessions
+                .OrderBy(ws => ws.StartTime)
+                .Select(ws => new { Label = ws.StartTime.ToString("MM/dd HH:mm"), ws.TotalMinutes })
+                .ToList();
+            
+
+            // Prepare data for charts
+            var taskStatusCounts = tasks.GroupBy(t => t.Status)
+                                        .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                        .ToList();
+
+            var goalStatusCounts = goals.GroupBy(g => g.Status)
+                                      .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                      .ToList();
+
+            var workSessionDailyMinutes = workSessions.GroupBy(ws => ws.StartTime.Date)
+                                                    .Select(g => new { Date = g.Key, TotalMinutes = g.Sum(ws => ws.TotalMinutes) })
+                                                    .OrderBy(x => x.Date)
+                                                    .ToList();
+
+            var journalEntryDailyCounts = journalEntries.GroupBy(je => je.Date.Date)
+                                                        .Select(g => new { Date = g.Key, Count = g.Count() })
+                                                        .OrderBy(x => x.Date)
+                                                        .ToList();
+
+            var reportSubmissionDailyCounts = reports.GroupBy(r => r.SubmissionDate.Date)
+                                                    .Select(g => new { Date = g.Key, Count = g.Count() })
+                                                    .OrderBy(x => x.Date)
+                                                    .ToList();
+
+            // Prepare activity logs
+            var activityLogs = new List<string>();
+            foreach (var task in tasks.OrderByDescending(t => t.AssignedDate))
+            {
+                activityLogs.Add($"Task '{task.Title}' assigned on {task.AssignedDate.ToShortDateString()} with status {task.Status}.");
+            }
+            foreach (var journal in journalEntries.OrderByDescending(j => j.Date))
+            {
+                activityLogs.Add($"Journal entry on {journal.Date.ToShortDateString()}: {journal.EntryText.Substring(0, Math.Min(journal.EntryText.Length, 50))}...");
+            }
+            foreach (var report in reports.OrderByDescending(r => r.SubmissionDate))
+            {
+                activityLogs.Add($"Report submitted on {report.SubmissionDate.ToShortDateString()}.");
+            }
+            foreach (var ws in workSessions.OrderByDescending(ws => ws.StartTime))
+            {
+                activityLogs.Add($"Work session logged from {ws.StartTime.ToShortTimeString()} to {ws.EndTime.ToShortTimeString()} on {ws.StartTime.ToShortDateString()} ({ws.TotalMinutes} minutes).");
+            }
+            // Add more activity types as needed
+            activityLogs = activityLogs.OrderByDescending(a => a).ToList(); // Simple chronological sort
+
+            var viewModel = new InternProgressDashboardViewModel
+            {
+                Intern = intern,
+                Tasks = tasks,
+                JournalEntries = journalEntries,
+                Goals = goals,
+                Reports = reports,
+                WorkSessions = workSessions,
+                
+
+                TaskStatusLabels = taskStatusCounts.Select(x => x.Status).ToList(),
+                TaskStatusCounts = taskStatusCounts.Select(x => x.Count).ToList(),
+
+                GoalStatusLabels = goalStatusCounts.Select(x => x.Status).ToList(),
+                GoalStatusCounts = goalStatusCounts.Select(x => x.Count).ToList(),
+
+                WorkSessionDates = workSessionDailyMinutes.Select(x => x.Date.ToShortDateString()).ToList(),
+                WorkSessionMinutes = workSessionDailyMinutes.Select(x => x.TotalMinutes).ToList(),
+
+                JournalEntryDates = journalEntryDailyCounts.Select(x => x.Date.ToShortDateString()).ToList(),
+                JournalEntryCounts = journalEntryDailyCounts.Select(x => x.Count).ToList(),
+
+                ReportSubmissionDates = reportSubmissionDailyCounts.Select(x => x.Date.ToShortDateString()).ToList(),
+                ReportSubmissionCounts = reportSubmissionDailyCounts.Select(x => x.Count).ToList(),
+
+                IndividualWorkSessionLabels = individualWorkSessions.Select(x => x.Label).ToList(),
+                IndividualWorkSessionMinutes = individualWorkSessions.Select(x => x.TotalMinutes).ToList(),
+
+                ActivityLogs = activityLogs
+            };
+
+            return View(viewModel);
         }
     }
 }

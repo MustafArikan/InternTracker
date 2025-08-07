@@ -163,5 +163,59 @@ namespace InternTracker.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeUsername()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _context.AppUsers.FindAsync(userId.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ChangeUsernameViewModel { CurrentUsername = user.Username, NewUsername = string.Empty };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeUsername(ChangeUsernameViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _context.AppUsers.FindAsync(userId.Value);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                // Check if the new username is already taken by another user
+                var existingUserWithUsername = await _context.AppUsers.FirstOrDefaultAsync(u => u.Username == model.NewUsername);
+                if (existingUserWithUsername != null && existingUserWithUsername.Id != user.Id)
+                {
+                    ModelState.AddModelError("NewUsername", "This username is already taken.");
+                    return View(model);
+                }
+
+                user.Username = model.NewUsername;
+                _context.AppUsers.Update(user);
+                await _context.SaveChangesAsync();
+
+                // Update session username
+                HttpContext.Session.SetString("Username", user.Username);
+
+                ViewBag.Message = "Username changed successfully!";
+                return View(model);
+            }
+            return View(model);
+        }
     }
 }

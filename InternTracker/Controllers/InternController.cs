@@ -96,6 +96,79 @@ namespace InternTracker.Controllers
             return View(taskItem);
         }
 
+        public async Task<IActionResult> Start(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id && t.AssignedToUserId == userId);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var workSession = new WorkSession
+            {
+                UserId = userId.Value,
+                TaskId = id,
+                StartTime = DateTime.Now
+            };
+
+            _context.WorkSessions.Add(workSession);
+            await _context.SaveChangesAsync();
+
+            HttpContext.Session.SetInt32("ActiveWorkSessionId", workSession.Id);
+            HttpContext.Session.SetInt32("ActiveTaskId", id);
+
+            task.Status = InternTracker.Models.TaskStatus.InProgress;
+            _context.Update(task);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Stop(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var activeWorkSessionId = HttpContext.Session.GetInt32("ActiveWorkSessionId");
+            if (activeWorkSessionId == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var workSession = await _context.WorkSessions.FindAsync(activeWorkSessionId);
+            if (workSession == null || workSession.TaskId != id)
+            {
+                return NotFound();
+            }
+
+            workSession.EndTime = DateTime.Now;
+            workSession.TotalMinutes = (int)(workSession.EndTime - workSession.StartTime).TotalMinutes;
+            _context.Update(workSession);
+
+            var task = await _context.TaskItems.FindAsync(id);
+            if (task != null)
+            {
+                task.Status = InternTracker.Models.TaskStatus.Completed;
+                _context.Update(task);
+            }
+
+            await _context.SaveChangesAsync();
+
+            HttpContext.Session.Remove("ActiveWorkSessionId");
+            HttpContext.Session.Remove("ActiveTaskId");
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool TaskItemExists(int id)
         {
             return _context.TaskItems.Any(e => e.Id == id);
@@ -585,7 +658,8 @@ namespace InternTracker.Controllers
                 var report = new Models.Report
                 {
                     Feedback = Feedback,
-                    SubmissionDate = DateTime.Now
+                    SubmissionDate = DateTime.Now,
+                    MentorFeedback = string.Empty // Initialize MentorFeedback to an empty string
                 };
 
                 // Get user ID and assign it to the new object
@@ -613,6 +687,22 @@ namespace InternTracker.Controllers
 
                 _context.Add(report);
                 await _context.SaveChangesAsync();
+
+                // Notify all mentors about the new report
+                var mentors = await _context.AppUsers.Where(u => u.Role == UserRole.Mentor).ToListAsync();
+                foreach (var mentor in mentors)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = mentor.Id,
+                        Message = $"New report submitted by intern {User.Identity.Name}: {report.Feedback.Substring(0, Math.Min(report.Feedback.Length, 50))}...",
+                        NotificationType = "ReportSubmitted",
+                        RelatedEntityId = report.Id
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Reports));
             }
 
@@ -739,21 +829,7 @@ namespace InternTracker.Controllers
         }
 
 
-        public async Task<IActionResult> Notifications()
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToListAsync();
-
-            return View(notifications);
-        }
+        
 
         public async Task<IActionResult> ResourceFiles()
         {
@@ -766,6 +842,68 @@ namespace InternTracker.Controllers
             var resourceFiles = await _context.ResourceFiles.ToListAsync();
 
             return View(resourceFiles);
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var intern = await _context.AppUsers.FindAsync(userId.Value);
+            if (intern == null)
+            {
+                return NotFound();
+            }
+
+            var tasks = await _context.TaskItems.Where(t => t.AssignedToUserId == userId).ToListAsync();
+            var workSessions = await _context.WorkSessions.Where(ws => ws.UserId == userId).ToListAsync();
+            var goals = await _context.Goals.Where(g => g.UserId == userId).ToListAsync();
+            var reports = await _context.Reports.Where(r => r.UserId == userId).ToListAsync();
+
+            // Prepare data for charts
+            var taskStatusCounts = tasks.GroupBy(t => t.Status)
+                                        .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                        .ToList();
+
+            var timeSpentWeekly = workSessions.GroupBy(ws => ws.StartTime.Date.AddDays(-(int)ws.StartTime.DayOfWeek))
+                                                .Select(g => new { Week = g.Key, TotalMinutes = g.Sum(ws => ws.TotalMinutes) })
+                                                .OrderBy(x => x.Week)
+                                                .ToList();
+
+            var goalStatusCounts = goals.GroupBy(g => g.Status)
+                                      .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                      .ToList();
+
+            var reportsSubmittedWeekly = reports.GroupBy(r => r.SubmissionDate.Date.AddDays(-(int)r.SubmissionDate.DayOfWeek))
+                                                .Select(g => new { Week = g.Key, Count = g.Count() })
+                                                .OrderBy(x => x.Week)
+                                                .ToList();
+
+            var viewModel = new InternDashboardViewModel
+            {
+                Intern = intern,
+                Tasks = tasks,
+                WorkSessions = workSessions,
+                Goals = goals,
+                Reports = reports,
+
+                TaskStatusLabels = taskStatusCounts.Select(x => x.Status).ToList(),
+                TaskStatusCounts = taskStatusCounts.Select(x => x.Count).ToList(),
+
+                TimeSpentWeeklyLabels = timeSpentWeekly.Select(x => x.Week.ToString("yyyy-MM-dd")).ToList(),
+                TimeSpentWeeklyData = timeSpentWeekly.Select(x => (double)x.TotalMinutes).ToList(),
+
+                GoalStatusLabels = goalStatusCounts.Select(x => x.Status).ToList(),
+                GoalStatusCounts = goalStatusCounts.Select(x => x.Count).ToList(),
+
+                ReportsSubmittedLabels = reportsSubmittedWeekly.Select(x => x.Week.ToString("yyyy-MM-dd")).ToList(),
+                ReportsSubmittedCounts = reportsSubmittedWeekly.Select(x => x.Count).ToList()
+            };
+
+            return View(viewModel);
         }
     }
 }

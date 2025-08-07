@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InternTrack.styles.css" asp-append-version="true" />
+    
 </head>
 <body>
     <header>
@@ -50,6 +51,9 @@
                         else if (Context.Session.GetString("Role") == "Intern")
                         {
                             <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Dashboard">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Index">My Tasks</a>
                             </li>
                             <li class="nav-item">
@@ -65,7 +69,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Reports">Reports</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Notifications">Notifications</a>
+                                
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="ResourceFiles">Resources</a>
@@ -75,6 +79,12 @@
                     <ul class="navbar-nav ms-auto">
                         @if (Context.Session.GetString("Username") != null)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index" title="Notifications">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="badge bg-danger" id="unreadNotificationsCount">0</span>
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Hello, @Context.Session.GetString("Username")!
@@ -119,5 +129,21 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            function getUnreadNotificationsCount() {
+                $.get("/Notification/GetUnreadCount", function (data) {
+                    $("#unreadNotificationsCount").text(data);
+                });
+            }
+
+            // Call on page load
+            getUnreadNotificationsCount();
+
+            // Refresh count every 30 seconds (adjust as needed)
+            setInterval(getUnreadNotificationsCount, 30000);
+        });
+    </script>
 </body>
 </html>
