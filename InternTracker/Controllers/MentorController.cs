@@ -50,7 +50,7 @@ namespace InternTracker.Controllers
                 Goals = await _context.Goals.Where(g => g.UserId == id).ToListAsync(),
                 Reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync(),
                 WorkSessions = await _context.WorkSessions.Where(ws => ws.UserId == id).ToListAsync(),
-                Notifications = await _context.Notifications.Where(n => n.UserId == id).ToListAsync()
+                
             };
 
             return View(viewModel);
@@ -404,7 +404,7 @@ namespace InternTracker.Controllers
                 .OrderBy(ws => ws.StartTime)
                 .Select(ws => new { Label = ws.StartTime.ToString("MM/dd HH:mm"), ws.TotalMinutes })
                 .ToList();
-            var notifications = await _context.Notifications.Where(n => n.UserId == id).ToListAsync();
+            
 
             // Prepare data for charts
             var taskStatusCounts = tasks.GroupBy(t => t.Status)
@@ -459,7 +459,7 @@ namespace InternTracker.Controllers
                 Goals = goals,
                 Reports = reports,
                 WorkSessions = workSessions,
-                Notifications = notifications,
+                
 
                 TaskStatusLabels = taskStatusCounts.Select(x => x.Status).ToList(),
                 TaskStatusCounts = taskStatusCounts.Select(x => x.Count).ToList(),

@@ -812,21 +812,7 @@ namespace InternTracker.Controllers
         }
 
 
-        public async Task<IActionResult> Notifications()
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToListAsync();
-
-            return View(notifications);
-        }
+        
 
         public async Task<IActionResult> ResourceFiles()
         {
