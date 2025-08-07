@@ -1,0 +1,50 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+        <span class="badge bg-danger" id="notificationCount">@ViewBag.UnreadNotificationCount</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" id="notificationDropdown">
+        <li><a class="dropdown-item" href="#">No new notifications</a></li>
+    </ul>
+</li>
+
+<script>
+    $(document).ready(function () {
+        function fetchNotifications() {
+            $.get("/api/notifications/recent-unread", function (data) {
+                var dropdown = $("#notificationDropdown");
+                dropdown.empty();
+
+                if (data.length === 0) {
+                    dropdown.append('<li><a class="dropdown-item" href="#">No new notifications</a></li>');
+                } else {
+                    $.each(data, function (index, notification) {
+                        var notificationItem = $('<li class="dropdown-item d-flex justify-content-between align-items-center">' +
+                            '<span>' + notification.message + '</span>' +
+                            '<button class="btn btn-sm btn-outline-primary mark-as-read" data-id="' + notification.id + '">Mark as Read</button>' +
+                            '</li>');
+                        dropdown.append(notificationItem);
+                    });
+                }
+            });
+
+            $.get("/api/notifications/unread-count", function (data) {
+                $("#notificationCount").text(data.count);
+            });
+        }
+
+        // Initial fetch
+        fetchNotifications();
+
+        // Fetch every 30 seconds
+        setInterval(fetchNotifications, 30000);
+
+        // Mark as read functionality
+        $(document).on("click", ".mark-as-read", function () {
+            var notificationId = $(this).data("id");
+            $.post("/api/notifications/mark-as-read/" + notificationId, function () {
+                fetchNotifications(); // Refresh notifications after marking as read
+            });
+        });
+    });
+</script>

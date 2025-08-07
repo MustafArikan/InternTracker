@@ -1,40 +1,43 @@
 @model InternTracker.Models.UpdateEmailViewModel
 
-@{ 
+@{
     ViewData["Title"] = "Update Email";
 }
 
-<h1>Update Email</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="UpdateEmail">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="NewEmail" class="control-label"></label>
-                <input asp-for="NewEmail" class="form-control" />
-                <span asp-validation-for="NewEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Update Email" class="btn btn-primary" />
-            </div>
-            @if (ViewBag.Message != null)
-            {
-                <div class="alert alert-success mt-3">@ViewBag.Message</div>
-            }
-        </form>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="fas fa-envelope me-2"></i>Update Email</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="UpdateEmail">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group mb-3">
+                    <label asp-for="NewEmail" class="form-label"></label>
+                    <input asp-for="NewEmail" class="form-control" />
+                    <span asp-validation-for="NewEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-4">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Email</button>
+                </div>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success mt-3">@ViewBag.Message</div>
+                }
+            </form>
+        </div>
+        <div class="card-footer text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to Profile</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }
