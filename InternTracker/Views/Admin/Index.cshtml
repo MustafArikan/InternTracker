@@ -38,9 +38,9 @@
                         {
                             <tr>
                                 <td class="d-flex align-items-center">
-                                    <img src="@(item.ProfilePicturePath ?? Url.Content("~/images/default-avatar.png"))"
+                                    <img src="@(string.IsNullOrWhiteSpace(item.ProfilePicturePath) ? Url.Content("~/images/default-avatar.png") : Url.Content(item.ProfilePicturePath))"
                                          alt="Profile Picture"
-                                         class="me-3" 
+                                         class="me-3"
                                          style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                                     <span>@Html.DisplayFor(modelItem => item.Username)</span>
                                 </td>
