@@ -658,7 +658,8 @@ namespace InternTracker.Controllers
                 var report = new Models.Report
                 {
                     Feedback = Feedback,
-                    SubmissionDate = DateTime.Now
+                    SubmissionDate = DateTime.Now,
+                    MentorFeedback = string.Empty // Initialize MentorFeedback to an empty string
                 };
 
                 // Get user ID and assign it to the new object
@@ -686,6 +687,22 @@ namespace InternTracker.Controllers
 
                 _context.Add(report);
                 await _context.SaveChangesAsync();
+
+                // Notify all mentors about the new report
+                var mentors = await _context.AppUsers.Where(u => u.Role == UserRole.Mentor).ToListAsync();
+                foreach (var mentor in mentors)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = mentor.Id,
+                        Message = $"New report submitted by intern {User.Identity.Name}: {report.Feedback.Substring(0, Math.Min(report.Feedback.Length, 50))}...",
+                        NotificationType = "ReportSubmitted",
+                        RelatedEntityId = report.Id
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Reports));
             }
 

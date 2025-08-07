@@ -222,6 +222,22 @@ namespace InternTracker.Controllers
                 // 4. Add the now-complete object to the context and save
                 _context.Add(resourceFile);
                 await _context.SaveChangesAsync();
+
+                // Notify all interns about the new resource
+                var interns = await _context.AppUsers.Where(u => u.Role == UserRole.Intern).ToListAsync();
+                foreach (var intern in interns)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = intern.Id,
+                        Message = $"New resource uploaded: {resourceFile.Title}",
+                        NotificationType = "ResourceUploaded",
+                        RelatedEntityId = resourceFile.Id
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(ResourceFiles));
             }
 

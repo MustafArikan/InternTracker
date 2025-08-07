@@ -1,0 +1,44 @@
+@model IEnumerable<InternTracker.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsRead ? "text-muted" : "font-weight-bold")">
+                    <td>@Html.DisplayFor(modelItem => item.Message)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                    <td>@(item.IsRead ? "Read" : "Unread")</td>
+                    <td>
+                        @if (!item.IsRead)
+                        {
+                            <form asp-action="MarkAsRead" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-primary">Mark as Read</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No notifications found.</p>
+}

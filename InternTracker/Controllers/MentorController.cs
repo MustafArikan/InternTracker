@@ -102,6 +102,21 @@ namespace InternTracker.Controllers
                 _context.Add(newTask);
                 await _context.SaveChangesAsync();
 
+                // Create a notification for the intern
+                var targetIntern = await _context.AppUsers.FindAsync(newTask.AssignedToUserId);
+                if (targetIntern != null)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = targetIntern.Id,
+                        Message = $"New task assigned: {newTask.Title}",
+                        NotificationType = "TaskAssigned",
+                        RelatedEntityId = newTask.Id
+                    };
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
+                }
+
                 // Redirect to the intern's details page.
                 return RedirectToAction(nameof(ViewInternDetails), new { id = newTask.AssignedToUserId });
             }
@@ -194,6 +209,13 @@ namespace InternTracker.Controllers
             if (taskItem != null)
             {
                 var internId = taskItem.AssignedToUserId; // Save the intern's ID before deleting
+
+                // Find and remove all associated WorkSessions
+                var workSessionsToDelete = await _context.WorkSessions
+                    .Where(ws => ws.TaskId == id)
+                    .ToListAsync();
+                _context.WorkSessions.RemoveRange(workSessionsToDelete);
+
                 _context.TaskItems.Remove(taskItem);
                 await _context.SaveChangesAsync();
 
@@ -266,6 +288,22 @@ namespace InternTracker.Controllers
 
                 _context.Add(resourceFile);
                 await _context.SaveChangesAsync();
+
+                // Notify all interns about the new resource
+                var interns = await _context.AppUsers.Where(u => u.Role == UserRole.Intern).ToListAsync();
+                foreach (var intern in interns)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = intern.Id,
+                        Message = $"New resource uploaded by your mentor: {resourceFile.Title}",
+                        NotificationType = "ResourceUploaded",
+                        RelatedEntityId = resourceFile.Id
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(ResourceFiles));
             }
 

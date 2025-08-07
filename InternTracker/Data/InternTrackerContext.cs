@@ -16,6 +16,7 @@ namespace InternTracker.Data
         public DbSet<ResourceFile> ResourceFiles { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<WorkSession> WorkSessions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
     }
 }
