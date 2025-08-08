@@ -52,7 +52,7 @@ InternTracker is a comprehensive web application designed to streamline the mana
 
 2.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/InternTracker.git
+    git clone https://github.com/MustafArikan/InternTracker.git
     cd InternTracker/InternTracker
     ```
 
