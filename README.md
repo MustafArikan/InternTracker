@@ -1,7 +1,7 @@
 # InternTracker
 
 InternTracker is a comprehensive web application designed to streamline the management and tracking of intern activities, progress, and resources within an organization. It provides distinct roles for Admins, Mentors, and Interns, each with tailored functionalities to facilitate efficient collaboration and oversight.
-![](InternTracker/wwwroot/Gitimages/Main.png)
+![](InternTracker/wwwroot/Git_Images/Main.png)
 ## Features
 
 ### User Management & Authentication
@@ -16,19 +16,19 @@ InternTracker is a comprehensive web application designed to streamline the mana
 - **Goal Setting:** Interns can set personal goals, track their status (Active, Completed, Reflected), and add reflections.
 - **Report Submission:** Interns can submit reports, including file uploads, and receive feedback from mentors.
 - **Dashboard:** A personalized dashboard for interns to view their tasks, work sessions, goals, and reports, with visual progress indicators.
-![](InternTracker/wwwroot/Gitimages/Intern.png)
+![](InternTracker/wwwroot/Git_Images/Intern.png)
 ### Mentor-Specific Features
 - **Intern Oversight:** Mentors can view details of assigned interns, including their tasks, journal entries, goals, reports, and work sessions.
 - **Task Assignment:** Mentors can assign new tasks to interns.
 - **Feedback:** Mentors can provide feedback on submitted intern reports.
 - **Resource Sharing:** Mentors can upload and manage resource files for interns.
 - **Progress Dashboard:** Detailed progress dashboard for each intern, showing task status, work session logs, journal entry counts, and report submission trends.
-![](InternTracker/wwwroot/Gitimages/Mentor.png)
+![](InternTracker/wwwroot/Git_Images/Mentor.png)
 ### Admin-Specific Features
 - **User Administration:** Admins have full control over user accounts, including creation, editing (e.g., changing roles), and deletion.
 - **Resource Management:** Admins can upload, edit, and delete resource files accessible to all users.
 - **System Reports:** Generate system-wide reports on user registrations, resource uploads by role, and other key metrics.
-![](InternTracker/wwwroot/Gitimages/Admin.png)
+![](InternTracker/wwwroot/Git_Images/Admin.png)
 ### General Features
 - **Notifications:** Users receive notifications for relevant events (e.g., new tasks assigned, new resources uploaded, reports submitted).
 - **File Uploads:** Secure handling of file uploads for profile pictures, reports, and resource files.
