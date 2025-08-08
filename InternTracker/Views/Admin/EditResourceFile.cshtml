@@ -1,46 +1,50 @@
-
 @model InternTracker.Models.ResourceFile
 
 @{
     ViewData["Title"] = "Edit Resource File";
+    Layout = "_Layout";
 }
 
-<h2>Edit Resource File</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="EditResourceFile" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UploadedByUserId" />
+                        <input type="hidden" asp-for="UploadDate" />
+                        <input type="hidden" asp-for="FilePath" />
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditResourceFile" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label class="control-label">Current File</label>
-                <div>
-                    <a href="@Model.FilePath" target="_blank">@Model.FilePath</a>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Resource Title" />
+                            <label asp-for="Title">Resource Title</label>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Current File</label>
+                            <div>
+                                <a href="@Model.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark">Download Current File</a>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Upload New File (Optional)</label>
+                            <input type="file" name="file" class="form-control" />
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            <a asp-action="ResourceFiles" class="btn btn-outline-dark">Back to List</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="file" class="control-label">Upload New File (Optional)</label>
-                <input type="file" name="file" class="form-control" />
-            </div>
-            
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="ResourceFiles">Back to List</a>
 </div>
 
 @section Scripts {

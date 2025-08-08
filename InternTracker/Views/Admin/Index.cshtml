@@ -2,81 +2,77 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard";
+    Layout = "_Layout";
 }
 
-<div class="card shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">
-            <i class="fas fa-users-cog me-2"></i>@ViewData["Title"]
-        </h2>
-        <a asp-action="CreateUser" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Create New User
-        </a>
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Manage all users within the InternTracker system.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="CreateUser" class="btn btn-primary fw-bold">
+                <i class="fas fa-plus me-2"></i>Create New User
+            </a>
+        </div>
     </div>
 
-    <div class="card-body">
-        @if (Model.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Username)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Email)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Role)
-                            </th>
-                            <th style="width: 150px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
-                                <td class="d-flex align-items-center">
-                                    <img src="@(string.IsNullOrWhiteSpace(item.ProfilePicturePath) ? Url.Content("~/images/default-avatar.png") : Url.Content(item.ProfilePicturePath))"
-                                         alt="Profile Picture"
-                                         class="me-3"
-                                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
-                                    <span>@Html.DisplayFor(modelItem => item.Username)</span>
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Email)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Role)
-                                </td>
-                                <td>
-                                    <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit @item.Username">
-                                        <i class="fas fa-pencil-alt"></i> Edit
-                                    </a>
-                                    <a asp-action="DeleteUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete @item.Username"
-                                       onclick="return confirm('Are you sure you want to delete the user: @item.Username?');">
-                                        <i class="fas fa-trash-alt"></i> Delete
-                                    </a>
-                                </td>
+                                <th scope="col">Username</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Role</th>
+                                <th scope="col" class="text-end">Actions</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info" role="alert">
-                <h4 class="alert-heading">No Users Found!</h4>
-                <p>There are currently no users in the system. You can get started by creating one.</p>
-                <hr>
-                <p class="mb-0">
-                    <a asp-action="CreateUser" class="btn btn-success">
-                        <i class="fas fa-plus me-1"></i> Create the First User
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="@(string.IsNullOrWhiteSpace(item.ProfilePicturePath) ? Url.Content("~/images/default-avatar.png") : Url.Content(item.ProfilePicturePath))"
+                                                 alt="Profile Picture"
+                                                 class="rounded-circle me-2"
+                                                 style="width: 35px; height: 35px; object-fit: cover;" />
+                                            @Html.DisplayFor(modelItem => item.Username)
+                                        </div>
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Role)</td>
+                                    <td class="text-end">
+                                        <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark me-1" title="Edit @item.Username">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a asp-action="DeleteUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete @item.Username"
+                                           onclick="return confirm('Are you sure you want to delete the user: @item.Username?');">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center" role="alert">
+                    <h4 class="alert-heading">No Users Found!</h4>
+                    <p>There are currently no users in the system. Get started by creating one.</p>
+                    <hr>
+                    <a asp-action="CreateUser" class="btn btn-success fw-bold">
+                        <i class="fas fa-plus me-2"></i>Create the First User
                     </a>
-                </p>
-            </div>
-        }
+                </div>
+            }
+        </div>
     </div>
 </div>

@@ -2,127 +2,116 @@
 
 @{
     ViewData["Title"] = $"{Model.Intern.Username}'s Progress Dashboard";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Detailed insights into @Model.Intern.Username's internship progress.</p>
+        </div>
+    </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                Intern Details
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.Intern.Username</h5>
-                <p class="card-text">Email: @Model.Intern.Email</p>
-                <p class="card-text">Role: @Model.Intern.Role</p>
-                @if (!string.IsNullOrEmpty(Model.Intern.ProfilePicturePath))
-                {
-                    <img src="@Model.Intern.ProfilePicturePath" alt="Profile Picture" class="img-thumbnail" style="max-width: 150px;" />
-                }
-                else
-                {
-                    <p>No profile picture.</p>
-                }
+    <!-- Intern Details Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-bold">Intern Details</div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-auto">
+                    <img src="@(string.IsNullOrWhiteSpace(Model.Intern.ProfilePicturePath) ? Url.Content("~/images/default-avatar.png") : Url.Content(Model.Intern.ProfilePicturePath))"
+                         alt="Profile Picture"
+                         class="rounded-circle me-3"
+                         style="width: 80px; height: 80px; object-fit: cover;" />
+                </div>
+                <div class="col">
+                    <h5 class="mb-1">@Model.Intern.Username</h5>
+                    <p class="mb-1 text-muted">@Model.Intern.Email</p>
+                    <p class="mb-0 text-muted">Role: @Model.Intern.Role</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-header">
-                Task Status
-            </div>
-            <div class="card-body">
-                <canvas id="taskStatusChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3"></div>
-</div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Work Session Log (Minutes)
+    <!-- Charts Section -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Task Status</div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="taskStatusChart"></canvas>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="workSessionChart"></canvas>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Goal Status</div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="goalStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Work Session Log (Minutes)</div>
+                <div class="card-body">
+                    <canvas id="workSessionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Journal Entry Frequency</div>
+                <div class="card-body">
+                    <canvas id="journalEntryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Report Submission Trend</div>
+                <div class="card-body">
+                    <canvas id="reportSubmissionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Individual Work Sessions</div>
+                <div class="card-body">
+                    <canvas id="individualWorkSessionChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Journal Entry Frequency
-            </div>
-            <div class="card-body">
-                <canvas id="journalEntryChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Goal Status
-            </div>
-            <div class="card-body">
-                <canvas id="goalStatusChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Report Submission Trend
-            </div>
-            <div class="card-body">
-                <canvas id="reportSubmissionChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4 justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                Activity Log
-            </div>
-            <div class="card-body">
-                <ul class="list-group">
+    <!-- Activity Log Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-bold">Activity Log</div>
+        <div class="card-body">
+            @if (Model.ActivityLogs.Any())
+            {
+                <ul class="list-group list-group-flush">
                     @foreach (var log in Model.ActivityLogs)
                     {
                         <li class="list-group-item">@log</li>
                     }
                 </ul>
-            </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">No recent activity for this intern.</div>
+            }
         </div>
     </div>
-</div>
 
-
-
-</div>
-
-<div class="row mt-4 justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                Individual Work Sessions (Minutes)
-            </div>
-            <div class="card-body">
-                <canvas id="individualWorkSessionChart"></canvas>
-            </div>
-        </div>
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-outline-dark">Back to Intern List</a>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/lib/chartjs/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Task Status Chart
@@ -134,9 +123,9 @@
                     datasets: [{
                         data: @Html.Raw(Json.Serialize(Model.TaskStatusCounts)),
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.6)', // Not Started
-                            'rgba(54, 162, 235, 0.6)', // In Progress
-                            'rgba(75, 192, 192, 0.6)'  // Completed
+                            'rgba(255, 99, 132, 0.7)', // Not Started
+                            'rgba(54, 162, 235, 0.7)', // In Progress
+                            'rgba(75, 192, 192, 0.7)'  // Completed
                         ],
                         borderColor: [
                             'rgba(255, 99, 132, 1)',
@@ -148,80 +137,10 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Task Status'
-                        }
-                    }
-                }
-            });
-
-            // Work Session Chart
-            var ctxWorkSession = document.getElementById('workSessionChart').getContext('2d');
-            new Chart(ctxWorkSession, {
-                type: 'bar',
-                data: {
-                    labels: @Html.Raw(Json.Serialize(Model.WorkSessionDates)),
-                    datasets: [{
-                        label: 'Minutes Logged',
-                        data: @Html.Raw(Json.Serialize(Model.WorkSessionMinutes)),
-                        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Work Session Log (Minutes)'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Journal Entry Chart
-            var ctxJournalEntry = document.getElementById('journalEntryChart').getContext('2d');
-            new Chart(ctxJournalEntry, {
-                type: 'bar',
-                data: {
-                    labels: @Html.Raw(Json.Serialize(Model.JournalEntryDates)),
-                    datasets: [{
-                        label: 'Entries Count',
-                        data: @Html.Raw(Json.Serialize(Model.JournalEntryCounts)),
-                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Journal Entry Frequency'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                        legend: { position: 'bottom' },
+                        title: { display: false }
                     }
                 }
             });
@@ -235,9 +154,9 @@
                     datasets: [{
                         data: @Html.Raw(Json.Serialize(Model.GoalStatusCounts)),
                         backgroundColor: [
-                            'rgba(75, 192, 192, 0.6)', // Active
-                            'rgba(255, 206, 86, 0.6)', // Completed
-                            'rgba(255, 99, 132, 0.6)'  // Archived
+                            'rgba(75, 192, 192, 0.7)', // Active
+                            'rgba(255, 206, 86, 0.7)', // Completed
+                            'rgba(255, 99, 132, 0.7)'  // Archived
                         ],
                         borderColor: [
                             'rgba(75, 192, 192, 1)',
@@ -249,19 +168,75 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Goal Status'
+                        legend: { position: 'bottom' },
+                        title: { display: false }
+                    }
+                }
+            });
+
+            // Work Session Log Chart
+            var ctxWorkSession = document.getElementById('workSessionChart').getContext('2d');
+            new Chart(ctxWorkSession, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.WorkSessionDates)),
+                    datasets: [{
+                        label: 'Minutes Logged',
+                        data: @Html.Raw(Json.Serialize(Model.WorkSessionMinutes)),
+                        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
                         }
                     }
                 }
             });
 
-            // Report Submission Chart
+            // Journal Entry Frequency Chart
+            var ctxJournalEntry = document.getElementById('journalEntryChart').getContext('2d');
+            new Chart(ctxJournalEntry, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.JournalEntryDates)),
+                    datasets: [{
+                        label: 'Entries Count',
+                        data: @Html.Raw(Json.Serialize(Model.JournalEntryCounts)),
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // Report Submission Trend Chart
             var ctxReportSubmission = document.getElementById('reportSubmissionChart').getContext('2d');
             new Chart(ctxReportSubmission, {
                 type: 'line',
@@ -278,24 +253,21 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Report Submission Trend'
-                        }
+                        legend: { position: 'bottom' },
+                        title: { display: false }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
                         }
                     }
                 }
             });
 
-            // New Chart: Individual Work Sessions
+            // Individual Work Sessions Chart
             var ctxIndividualWorkSession = document.getElementById('individualWorkSessionChart').getContext('2d');
             new Chart(ctxIndividualWorkSession, {
                 type: 'bar',
@@ -304,25 +276,22 @@
                     datasets: [{
                         label: 'Minutes Logged',
                         data: @Html.Raw(Json.Serialize(Model.IndividualWorkSessionMinutes)),
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Individual Work Sessions'
-                        }
+                        legend: { display: false },
+                        title: { display: false }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
                         }
                     }
                 }

@@ -168,7 +168,6 @@ namespace InternTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadResourceFile(string Title, IFormFile file)
         {
-            //Manual Validation
             if (string.IsNullOrWhiteSpace(Title))
             {
                 ModelState.AddModelError("Title", "The Title field is required.");
@@ -178,17 +177,14 @@ namespace InternTracker.Controllers
                 ModelState.AddModelError("File", "Please select a file to upload.");
             }
 
-            // Now, check if our manual validation passed.
             if (ModelState.IsValid)
             {
-                // 1. Manually create a new ResourceFile object.
                 var resourceFile = new ResourceFile
                 {
-                    Title = Title, // Use the Title from the form parameter
-                    UploadDate = DateTime.Now // Set the date on the server
+                    Title = Title, 
+                    UploadDate = DateTime.Now 
                 };
 
-                // Note: User.FindFirst... which is more robust than Session.
                 var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 if (int.TryParse(userIdString, out int userId))
                 {

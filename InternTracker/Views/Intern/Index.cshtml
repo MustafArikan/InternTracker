@@ -1,113 +1,165 @@
-@model IEnumerable<InternTracker.Models.TaskItem>
-
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model InternTracker.Models.InternDashboardViewModel
 
 @{
-    ViewData["Title"] = "Intern Dashboard";
-    var activeWorkSessionId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveWorkSessionId");
-    var activeTaskId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveTaskId");
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+    var username = Model.Intern?.Username ?? "Intern";
 }
 
-<h2>@ViewData["Title"]</h2>
+@section Styles {
+    <style>
+        .stat-card {
+            border-left: 5px solid var(--bs-primary);
+            transition: all 0.2s ease-in-out;
+        }
 
-<h3>My Tasks</h3>
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-left-width: 7px;
+        }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedDate)
-            </td>
-            <td id="status-@item.Id">
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                @if (activeWorkSessionId == null)
-                {
-                    if (item.Status == InternTracker.Models.TaskStatus.NotStarted)
-                    {
-                        <a asp-action="Start" asp-route-id="@item.Id" class="btn btn-success btn-sm">Start</a>
-                    }
-                }
-                else if (activeTaskId == item.Id)
-                {
-                    <a asp-action="Stop" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Stop</a>
-                    <span id="timer-@item.Id" class="ml-2 font-weight-bold"></span>
-                }
-            </td>
-        </tr>
+        .nav-card {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+        }
+
+        .nav-card .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+        }
+
+        .nav-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--bs-primary);
+        }
+    </style>
 }
-    </tbody>
-</table>
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Welcome back, @username!</h1>
+            <p class="text-muted">This is your command center. Track your progress and manage your internship effectively.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm stat-card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">In-Progress Tasks</h6>
+                    <h4 class="card-title fw-bold">@Model.Tasks.Count(t => t.Status == InternTracker.Models.TaskStatus.InProgress)</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm stat-card" style="border-left-color: var(--bs-success);">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Completed Tasks</h6>
+                    <h4 class="card-title fw-bold">@Model.Tasks.Count(t => t.Status == InternTracker.Models.TaskStatus.Completed)</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm stat-card" style="border-left-color: var(--bs-warning);">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Active Goals</h6>
+                    <h4 class="card-title fw-bold">@Model.Goals.Count(g => g.Status == GoalStatus.Active)</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm stat-card" style="border-left-color: var(--bs-info);">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total Reports</h6>
+                    <h4 class="card-title fw-bold">@Model.Reports.Count()</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <a asp-action="MyTasks" class="card shadow-sm nav-card">
+                <div class="card-body">
+                    <i class="fas fa-tasks nav-card-icon"></i>
+                    <h5 class="card-title fw-bold">My Tasks</h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a asp-action="JournalEntries" class="card shadow-sm nav-card">
+                <div class="card-body">
+                    <i class="fas fa-book-open nav-card-icon"></i>
+                    <h5 class="card-title fw-bold">Journal</h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a asp-action="Goals" class="card shadow-sm nav-card">
+                <div class="card-body">
+                    <i class="fas fa-bullseye nav-card-icon"></i>
+                    <h5 class="card-title fw-bold">Goals</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Task Status Overview
+                </div>
+                <div class="card-body">
+                    <canvas id="taskStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let timerInterval;
-        let activeTaskId = @(activeTaskId ?? 0);
-
-        function updateTimer(startTime, timerElement) {
-            const start = new Date(startTime).getTime();
-            timerInterval = setInterval(() => {
-                const now = new Date().getTime();
-                const distance = now - start;
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        if (activeTaskId > 0) {
-            const startTime = localStorage.getItem(`startTime-${activeTaskId}`);
-            if (startTime) {
-                const timerElement = document.getElementById(`timer-${activeTaskId}`);
-                if (timerElement) {
-                    updateTimer(startTime, timerElement);
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('taskStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: @Json.Serialize(Model.TaskStatusLabels),
+                    datasets: [{
+                        label: 'Task Status',
+                        data: @Json.Serialize(Model.TaskStatusCounts),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
                 }
-            }
-        }
-
-        document.querySelectorAll('.btn-success').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const taskId = this.href.split('/').pop();
-                localStorage.setItem(`startTime-${taskId}`, new Date().toISOString());
             });
         });
-
-        document.querySelectorAll('.btn-danger').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const taskId = this.href.split('/').pop();
-                clearInterval(timerInterval);
-                localStorage.removeItem(`startTime-${taskId}`);
-            });
-        });
-    });
     </script>
 }

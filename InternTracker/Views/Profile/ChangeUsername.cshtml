@@ -2,37 +2,45 @@
 
 @{
     ViewData["Title"] = "Change Username";
+    Layout = "_Layout";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0"><i class="fas fa-user-edit me-2"></i>Change Username</h3>
-        </div>
-        <div class="card-body">
-            <form asp-action="ChangeUsername">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mb-3">
-                    <label asp-for="CurrentUsername" class="form-label"></label>
-                    <input asp-for="CurrentUsername" class="form-control" readonly />
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="ChangeUsername">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="CurrentUsername" class="form-label">Current Username</label>
+                            <input asp-for="CurrentUsername" class="form-control" readonly />
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="NewUsername" class="form-control" placeholder="New Username" />
+                            <label asp-for="NewUsername">New Username</label>
+                            <span asp-validation-for="NewUsername" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Change Username</button>
+                            <a asp-action="Index" class="btn btn-outline-dark">Back to Profile</a>
+                        </div>
+
+                        @if (ViewBag.Message != null)
+                        {
+                            <div class="alert alert-success mt-3 text-center">@ViewBag.Message</div>
+                        }
+                    </form>
                 </div>
-                <div class="form-group mb-4">
-                    <label asp-for="NewUsername" class="form-label"></label>
-                    <input asp-for="NewUsername" class="form-control" />
-                    <span asp-validation-for="NewUsername" class="text-danger"></span>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Change Username</button>
-                </div>
-            </form>
-        </div>
-        <div class="card-footer text-end">
-            <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }

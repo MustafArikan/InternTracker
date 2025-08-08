@@ -2,44 +2,75 @@
 
 @{
     ViewData["Title"] = "Log In";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row shadow-lg">
-        <div class="col-md-6 d-none d-md-block p-0">
-            <img src="~/lib/Pictures/GetStarted2.png"
-                 alt="Login Graphic"
-                 style="width:100%; height:100%; object-fit: cover;" />
-        </div>
-        <div class="col-md-6 p-4 p-md-5">
-            <h2>@ViewData["Title"]</h2>
-            <h4 class="font-weight-light">Welcome back! Please enter your details.</h4>
-            <hr />
-            <section>
-                <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group mb-3">
-                        <label asp-for="Email"></label>
-                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-                    <div class="form-group mb-4">
-                        <label asp-for="Password"></label>
-                        <input asp-for="Password" class="form-control" placeholder="Enter your password" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">Log in</button>
-                    </div>
-                    <div class="mt-4 text-center">
-                        <p>
-                            Don't have an account? <a asp-action="GetStarted">Sign Up</a>
-                        </p>
-                    </div>
-                </form>
-            </section>
-        </div>
+@section Styles {
+    <style>
+        .register-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            object-position: center;
+        }
 
+        @@media (min-width: 992px) {
+            .register-image {
+                height: 100%;
+                max-height: none;
+            }
+        }
+    </style>
+}
+
+<div class="container-fluid d-flex align-items-center justify-content-center py-5 bg-light" style="min-height: 10vh;">
+    <div class="card shadow-lg rounded-4 border-0" style="max-width: 1200px; width: 100%; overflow: hidden;">
+        <div class="row g-0">
+
+            <div class="col-12 col-lg-6">
+                <img src="~/lib/Pictures/GetStarted2.png"
+                     alt="Login Graphic"
+                     class="register-image" />
+            </div>
+
+            <div class="col-12 col-lg-6 d-flex flex-column justify-content-center">
+                <div class="card-body p-4 p-md-5">
+
+                    <h2 class="fw-bold mb-2">@ViewData["Title"]</h2>
+                    <h5 class="fw-normal text-muted mb-4">Welcome back! Please enter your details.</h5>
+
+                    <section>
+                        <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control" id="floatingEmail" placeholder="name@example.com" />
+                                <label asp-for="Email" for="floatingEmail"></label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Enter your password" />
+                                <label asp-for="Password" for="floatingPassword"></label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold">Log in</button>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="mb-0">
+                                    Don't have an account? <a asp-action="GetStarted" class="fw-bold">Sign Up</a>
+                                </p>
+                            </div>
+                        </form>
+                    </section>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 

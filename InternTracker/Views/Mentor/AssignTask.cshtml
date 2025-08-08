@@ -2,42 +2,43 @@
 
 @{
     ViewData["Title"] = "Assign Task";
+    Layout = "_Layout";
 }
 
-<h2>Assign Task to @ViewBag.InternUsername</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">Assign Task to @ViewBag.InternUsername</h2>
+                    <form asp-action="AssignTask" method="post">
+                        @Html.AntiForgeryToken()
 
-<h4>TaskItem</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AssignTask" method="post">
-            @Html.AntiForgeryToken() 
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="AssignedToUserId" />
 
-            <input type="hidden" asp-for="AssignedToUserId" />
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Task Title" />
+                            <label asp-for="Title">Task Title</label>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
 
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Description" class="form-control" placeholder="Task Description" style="height: 120px;"></textarea>
+                            <label asp-for="Description">Task Description</label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Assign Task</button>
+                            <a asp-action="ViewInternDetails" asp-route-id="@Model.AssignedToUserId" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Assign" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to Intern List</a>
 </div>
 
 @section Scripts {

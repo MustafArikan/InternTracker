@@ -1,58 +1,43 @@
 @model InternTracker.Models.Report
 
-@{ 
+@{
     ViewData["Title"] = "Give Feedback";
+    Layout = "_Layout";
 }
 
-<h1>Give Feedback for @Model.User.Username's Report</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">Give Feedback for @Model.User.Username's Report</h2>
+                    
+                    <div class="mb-4">
+                        <p class="mb-1"><strong>Submitted By:</strong> @Model.User.Username</p>
+                        <p class="mb-1"><strong>Submission Date:</strong> @Model.SubmissionDate.ToString("MMMM dd, yyyy")</p>
+                        <p class="mb-1"><strong>Intern's Feedback:</strong> @Model.Feedback</p>
+                        <p class="mb-1">
+                            <strong>Report File:</strong> 
+                            <a href="@Model.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark ms-2">Download Report</a>
+                        </p>
+                    </div>
 
-<div>
-    <h4>Report Details</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Submitted By
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Username)
-        </dd>
-        <dt class="col-sm-2">
-            Submission Date
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SubmissionDate)
-        </dd>
-        <dt class="col-sm-2">
-            Intern's Feedback
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Feedback)
-        </dd>
-        <dt class="col-sm-2">
-            Report File
-        </dt>
-        <dd class="col-sm-10">
-            <a href="@Model.FilePath" target="_blank">Download Report</a>
-        </dd>
-    </dl>
-</div>
+                    <form asp-action="GiveFeedback">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="form-floating mb-3">
+                            <textarea name="mentorFeedback" class="form-control" placeholder="Your feedback" style="height: 150px;">@Model.MentorFeedback</textarea>
+                            <label for="mentorFeedback">Mentor Feedback</label>
+                        </div>
 
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="GiveFeedback">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label for="mentorFeedback" class="control-label">Mentor Feedback</label>
-                <textarea name="mentorFeedback" class="form-control" rows="5">@Model.MentorFeedback</textarea>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Feedback</button>
+                            <a asp-action="ViewInternDetails" asp-route-id="@Model.UserId" class="btn btn-outline-dark">Back to Intern Details</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save Feedback" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="ViewInternDetails" asp-route-id="@Model.UserId">Back to Intern Details</a>
 </div>

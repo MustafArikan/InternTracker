@@ -2,51 +2,35 @@
 
 @{
     ViewData["Title"] = "My Reports";
+    Layout = "_Layout";
 }
 
-<h2>My Reports</h2>
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Submit your work and view feedback from your mentor.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="SubmitReport" class="btn btn-primary fw-bold">+ Submit Report</a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="SubmitReport">Submit New Report</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SubmissionDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FilePath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedback)
-            </th>
-            <th>
-                Mentor Feedback
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubmissionDate)
-            </td>
-            <td>
-                <a href="@item.FilePath" target="_blank">View Report</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Feedback)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MentorFeedback)
-            </td>
-            <td>
-                <a asp-action="EditReport" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="DeleteReport" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @foreach (var item in Model)
+    {
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                Report Submitted: @item.SubmissionDate.ToString("MMMM dd, yyyy")
+            </div>
+            <div class="card-body">
+                <p class="card-text"><strong>Your Feedback:</strong> @item.Feedback</p>
+                <p class="card-text"><strong>Mentor Feedback:</strong> @(item.MentorFeedback ?? "No feedback yet.")</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pb-3 text-end">
+                <a href="@item.FilePath" target="_blank" class="btn btn-secondary btn-sm">View File</a>
+                <a asp-action="EditReport" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">Edit</a>
+                <a asp-action="DeleteReport" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+            </div>
+        </div>
+    }
+</div>

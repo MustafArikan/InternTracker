@@ -1,45 +1,50 @@
-﻿@model InternTracker.Models.TaskItem
+@model InternTracker.Models.TaskItem
 
 @{
     ViewData["Title"] = "Edit Task";
+    Layout = "_Layout";
 }
 
-<h1>Edit Task</h1>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditTask">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="EditTask">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="AssignedDate" />
-            <input type="hidden" asp-for="AssignedToUserId" />
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="AssignedDate" />
+                        <input type="hidden" asp-for="AssignedToUserId" />
 
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Task Title" />
+                            <label asp-for="Title">Task Title</label>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Description" class="form-control" placeholder="Task Description" style="height: 120px;"></textarea>
+                            <label asp-for="Description">Task Description</label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<InternTracker.Models.TaskStatus>()"></select>
+                            <label asp-for="Status">Status</label>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            <a asp-action="ViewInternDetails" asp-route-id="@Model.AssignedToUserId" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<InternTracker.Models.TaskStatus>()"></select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="ViewInternDetails" asp-route-id="@Model.AssignedToUserId">Back to Intern Details</a>
 </div>
 
 @section Scripts {

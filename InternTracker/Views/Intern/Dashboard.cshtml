@@ -1,52 +1,52 @@
 @model InternTracker.Models.InternDashboardViewModel
 
 @{
-    ViewData["Title"] = "Intern Dashboard";
+    ViewData["Title"] = "Legacy Dashboard";
+    Layout = "_Layout";
 }
 
-<h1>Intern Dashboard for @Model.Intern.Username</h1>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">A detailed, chart-based overview of your progress.</p>
+        </div>
+    </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                Tasks Status
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Tasks Status</div>
+                <div class="card-body">
+                    <canvas id="tasksStatusChart"></canvas>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="tasksStatusChart"></canvas>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Time Spent Weekly (Minutes)</div>
+                <div class="card-body">
+                    <canvas id="timeSpentWeeklyChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                Time Spent Weekly (Minutes)
-            </div>
-            <div class="card-body">
-                <canvas id="timeSpentWeeklyChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                Goals Status
-            </div>
-            <div class="card-body">
-                <canvas id="goalsStatusChart"></canvas>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Goals Status</div>
+                <div class="card-body">
+                    <canvas id="goalsStatusChart"></canvas>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                Reports Submitted Weekly
-            </div>
-            <div class="card-body">
-                <canvas id="reportsSubmittedChart"></canvas>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Reports Submitted Weekly</div>
+                <div class="card-body">
+                    <canvas id="reportsSubmittedChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -55,32 +55,27 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Data from Model
-        const tasksStatusLabels = @Html.Raw(Json.Serialize(Model.TaskStatusLabels));
-        const tasksStatusCounts = @Html.Raw(Json.Serialize(Model.TaskStatusCounts));
+        document.addEventListener("DOMContentLoaded", function () {
+            const tasksStatusLabels = @Html.Raw(Json.Serialize(Model.TaskStatusLabels));
+            const tasksStatusCounts = @Html.Raw(Json.Serialize(Model.TaskStatusCounts));
+            const timeSpentWeeklyLabels = @Html.Raw(Json.Serialize(Model.TimeSpentWeeklyLabels));
+            const timeSpentWeeklyData = @Html.Raw(Json.Serialize(Model.TimeSpentWeeklyData));
+            const goalStatusLabels = @Html.Raw(Json.Serialize(Model.GoalStatusLabels));
+            const goalStatusCounts = @Html.Raw(Json.Serialize(Model.GoalStatusCounts));
+            const reportsSubmittedLabels = @Html.Raw(Json.Serialize(Model.ReportsSubmittedLabels));
+            const reportsSubmittedCounts = @Html.Raw(Json.Serialize(Model.ReportsSubmittedCounts));
 
-        const timeSpentWeeklyLabels = @Html.Raw(Json.Serialize(Model.TimeSpentWeeklyLabels));
-        const timeSpentWeeklyData = @Html.Raw(Json.Serialize(Model.TimeSpentWeeklyData));
-
-        const goalStatusLabels = @Html.Raw(Json.Serialize(Model.GoalStatusLabels));
-        const goalStatusCounts = @Html.Raw(Json.Serialize(Model.GoalStatusCounts));
-
-        const reportsSubmittedLabels = @Html.Raw(Json.Serialize(Model.ReportsSubmittedLabels));
-        const reportsSubmittedCounts = @Html.Raw(Json.Serialize(Model.ReportsSubmittedCounts));
-
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
-            }
-        };
+            };
 
-        new Chart(
-            document.getElementById('tasksStatusChart'),
-            {
+            new Chart(document.getElementById('tasksStatusChart'), {
                 type: 'bar',
                 data: {
                     labels: tasksStatusLabels,
@@ -93,12 +88,9 @@
                     }]
                 },
                 options: chartOptions
-            }
-        );
+            });
 
-        new Chart(
-            document.getElementById('timeSpentWeeklyChart'),
-            {
+            new Chart(document.getElementById('timeSpentWeeklyChart'), {
                 type: 'line',
                 data: {
                     labels: timeSpentWeeklyLabels,
@@ -106,43 +98,29 @@
                         label: 'Time Spent (Minutes)',
                         data: timeSpentWeeklyData,
                         fill: false,
-                        borderColor: 'rgb(75, 192, 192)',
+                        borderColor: 'rgb(54, 162, 235)',
                         tension: 0.1
                     }]
                 },
                 options: chartOptions
-            }
-        );
+            });
 
-        new Chart(
-            document.getElementById('goalsStatusChart'),
-            {
+            new Chart(document.getElementById('goalsStatusChart'), {
                 type: 'doughnut',
                 data: {
                     labels: goalStatusLabels,
                     datasets: [{
                         label: 'Goals',
                         data: goalStatusCounts,
-                        backgroundColor: [
-                            'rgba(75, 192, 192, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(255, 99, 132, 0.6)'
-                        ],
-                        borderColor: [
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(255, 99, 132, 1)'
-                        ],
+                        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 206, 86, 1)', 'rgba(255, 99, 132, 1)'],
                         borderWidth: 1
                     }]
                 },
-                options: chartOptions
-            }
-        );
+                options: { responsive: true, maintainAspectRatio: false }
+            });
 
-        new Chart(
-            document.getElementById('reportsSubmittedChart'),
-            {
+            new Chart(document.getElementById('reportsSubmittedChart'), {
                 type: 'bar',
                 data: {
                     labels: reportsSubmittedLabels,
@@ -155,7 +133,7 @@
                     }]
                 },
                 options: chartOptions
-            }
-        );
+            });
+        });
     </script>
 }
