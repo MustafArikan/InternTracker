@@ -2,36 +2,36 @@
 
 @{
     ViewData["Title"] = "Edit Journal Entry";
+    Layout = "_Layout";
 }
 
-<h2>Edit Journal Entry</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="EditJournalEntry">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="Date" />
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditJournalEntry">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="UserId" />
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="EntryText" class="form-control" placeholder="Edit your entry" style="height: 200px;"></textarea>
+                            <label asp-for="EntryText">Edit your entry</label>
+                            <span asp-validation-for="EntryText" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            <a asp-action="JournalEntries" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EntryText" class="control-label"></label>
-                <textarea asp-for="EntryText" class="form-control"></textarea>
-                <span asp-validation-for="EntryText" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="JournalEntries">Back to List</a>
 </div>
 
 @section Scripts {

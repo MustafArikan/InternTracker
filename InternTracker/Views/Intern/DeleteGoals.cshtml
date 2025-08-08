@@ -2,44 +2,33 @@
 
 @{
     ViewData["Title"] = "Delete Goal";
+    Layout = "_Layout";
 }
 
-<h2>Delete Goal</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="card-title">Are you sure you want to delete this goal?</h5>
+                    <p class="text-muted">This action cannot be undone.</p>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Goal:</strong> @Model.GoalTitle
+                    </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Goal</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GoalTitle)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GoalTitle)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReflectionText)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReflectionText)
-        </dd>
-    </dl>
-    
-    <form asp-action="DeleteGoals">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Goals">Back to List</a>
-    </form>
+                    <form asp-action="DeleteGoals">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <a asp-action="Goals" class="btn btn-secondary">No, Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

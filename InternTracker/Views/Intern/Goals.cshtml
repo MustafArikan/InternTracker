@@ -2,51 +2,65 @@
 
 @{
     ViewData["Title"] = "My Goals";
+    Layout = "_Layout";
 }
 
-<h2>My Goals</h2>
+@section Styles {
+    <style>
+        .goal-card {
+            transition: all 0.3s ease-in-out;
+        }
 
-<p>
-    <a asp-action="CreateGoal">Create New Goal</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.GoalTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReflectionText)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.GoalTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReflectionText)
-            </td>
-            <td>
-                <a asp-action="EditGoal" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="DeleteGoals" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+        .goal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+        }
+
+        .status-badge {
+            font-size: 0.9rem;
+            padding: 0.5em 0.8em;
+        }
+    </style>
 }
-    </tbody>
-</table>
+
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Set, track, and reflect on your personal and professional goals.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="CreateGoal" class="btn btn-primary fw-bold">+ New Goal</a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm goal-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title fw-bold">@item.GoalTitle</h5>
+                            <span class="badge rounded-pill 
+                                @if(item.Status == GoalStatus.Completed) {<text>bg-success</text>}
+                                else if(item.Status == GoalStatus.Active) {<text>bg-primary</text>}
+                                else {<text>bg-secondary</text>}">
+                                @item.Status
+                            </span>
+                        </div>
+                        <p class="card-text"><small class="text-muted">Created: @item.CreatedDate.ToString("MMM dd, yyyy")</small></p>
+                        @if (!string.IsNullOrEmpty(item.ReflectionText))
+                        {
+                            <p class="card-text fst-italic">"@item.ReflectionText"</p>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a asp-action="EditGoal" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">Edit</a>
+                        <a asp-action="DeleteGoals" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

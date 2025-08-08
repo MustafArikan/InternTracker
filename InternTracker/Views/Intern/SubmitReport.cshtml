@@ -2,34 +2,38 @@
 
 @{
     ViewData["Title"] = "Submit Report";
+    Layout = "_Layout";
 }
 
-<h2>Submit Report</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="SubmitReport" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label for="reportFile" class="form-label">Upload Report File</label>
+                            <input type="file" name="reportFile" id="reportFile" class="form-control" required />
+                        </div>
 
-<h4>Report</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="SubmitReport" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label for="reportFile" class="control-label">Upload Report File</label>
-                <input type="file" name="reportFile" id="reportFile" class="form-control" />
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Feedback" class="form-control" placeholder="Your feedback or comments" style="height: 150px;"></textarea>
+                            <label asp-for="Feedback">Your feedback or comments</label>
+                            <span asp-validation-for="Feedback" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Report</button>
+                            <a asp-action="Reports" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Feedback" class="control-label"></label>
-                <textarea asp-for="Feedback" class="form-control"></textarea>
-                <span asp-validation-for="Feedback" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Submit" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Reports">Back to List</a>
 </div>
 
 @section Scripts {

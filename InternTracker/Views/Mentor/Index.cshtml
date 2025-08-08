@@ -2,40 +2,39 @@
 
 @{
     ViewData["Title"] = "Mentor Dashboard";
+    Layout = "_Layout";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Oversee and manage your assigned interns.</p>
+        </div>
+    </div>
 
-<h3>My Interns</h3>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Username)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                <a asp-action="ViewInternDetails" asp-route-id="@item.Id">View Details</a> |
-                <a asp-action="AssignTask" asp-route-id="@item.Id">Assign Task</a> |
-                <a asp-action="InternProgressDashboard" asp-route-id="@item.Id">Progress Dashboard</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold mb-1">@item.Username</h5>
+                        <p class="card-text text-muted mb-3">@item.Email</p>
+                        <div class="mt-auto">
+                            <a asp-action="ViewInternDetails" asp-route-id="@item.Id" class="btn btn-primary btn-sm mb-2 w-100">
+                                <i class="fas fa-info-circle me-1"></i> View Details
+                            </a>
+                            <a asp-action="AssignTask" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm mb-2 w-100">
+                                <i class="fas fa-plus-circle me-1"></i> Assign Task
+                            </a>
+                            <a asp-action="InternProgressDashboard" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm w-100">
+                                <i class="fas fa-chart-line me-1"></i> Progress Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -2,39 +2,44 @@
 
 @{
     ViewData["Title"] = "Edit User";
+    Layout = "_Layout";
 }
 
-<h2>Edit User</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="EditUser">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
 
-<h4>AppUser</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditUser">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" readonly />
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label">Username</label>
+                            <input asp-for="Username" class="form-control" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
+                            <label asp-for="Role">Role</label>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            <a asp-action="Index" class="btn btn-outline-dark">Back to List</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" readonly />
-            </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <select asp-for="Role" class="form-control" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

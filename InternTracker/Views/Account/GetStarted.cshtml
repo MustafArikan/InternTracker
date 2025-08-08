@@ -2,57 +2,89 @@
 
 @{
     ViewData["Title"] = "Get Started";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row shadow-lg">
+@section Styles {
+    <style>
 
-        <div class="col-md-6 d-none d-md-block p-0">
-            <img src="~/lib/Pictures/GetStarted1.png"
-                 alt="A person working on a laptop"
-                 style="width:100%; height:100%; object-fit: cover;" />
+        .register-image {
+            width: 100%;
+            max-height: 250px; 
+            object-fit: cover;
+            object-position: center;
+        }
+
+        @@media (min-width: 992px) {
+            .register-image {
+                height: 100%;
+                max-height: none;
+            }
+        }
+    </style>
+}
+
+
+<div class="container-fluid d-flex align-items-center justify-content-center py-5 bg-light" style="min-height: 10vh;">
+    <div class="card shadow-lg rounded-4 border-0" style="max-width: 1200px; width: 100%; overflow: hidden;">
+        <div class="row g-0">
+
+            <div class="col-12 col-lg-6">
+
+                <img src="~/lib/Pictures/GetStarted1.png"
+                     alt="A person working on a laptop"
+                     class="register-image" />
+            </div>
+
+            <div class="col-12 col-lg-6 d-flex flex-column justify-content-center">
+                <div class="card-body p-4 p-md-5">
+
+                    <h2 class="fw-bold mb-2">@ViewData["Title"]</h2>
+                    <h5 class="fw-normal text-muted mb-4">Create your account to continue.</h5>
+
+                    <form asp-action="GetStarted" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Username" class="form-control" id="floatingUsername" placeholder="Choose a username" />
+                            <label asp-for="Username" for="floatingUsername"></label>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" type="email" class="form-control" id="floatingEmail" placeholder="name@example.com" />
+                            <label asp-for="Email" for="floatingEmail"></label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Create a password" />
+                            <label asp-for="Password" for="floatingPassword"></label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm your password" />
+                            <label asp-for="ConfirmPassword" for="floatingConfirmPassword"></label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button class="btn btn-primary btn-lg fw-bold" type="submit">Get Started</button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="mb-0">
+                                Already have an account? <a asp-action="Login" class="fw-bold">Login</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-
-        <div class="col-md-6 p-4 p-md-5">
-            <h2>@ViewData["Title"]</h2>
-            <h4 class="font-weight-light">Create a new account.</h4>
-            <hr />
-            <form asp-action="GetStarted" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mb-3">
-                    <label asp-for="Username"></label>
-                    <input asp-for="Username" class="form-control" placeholder="Choose a username" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Email"></label>
-                    <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Password"></label>
-                    <input asp-for="Password" class="form-control" placeholder="Create a password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-4">
-                    <label asp-for="ConfirmPassword"></label>
-                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg">Get Started</button>
-                </div>
-                <div class="mt-4 text-center">
-                    <p>
-                        Already have an account? <a asp-action="Login">Login</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-
     </div>
 </div>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

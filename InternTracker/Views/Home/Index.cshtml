@@ -1,26 +1,65 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .hero-wrapper {
+            min-height: 90vh;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%; 
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success" role="alert">
-        @TempData["SuccessMessage"]
+    <div class="container pt-3">
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
     </div>
 }
 
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-12 text-center">
-            <img src="~/lib/Pictures/IT.png" alt="InternTrack Logo" style="max-width: 512px; width: 100%;" class="mb-3" />
-            <h1 class="fw-bold" style="font-size: 2.5rem;">InternTracker</h1>
-        </div>
-    </div>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8 col-lg-6 text-center">
-            <p class="lead">
-                <strong>InternTracker</strong> is a modern internship tracking and mentorship platform built with ASP.NET MVC and Entity Framework. Designed for admins, mentors, and interns, it streamlines internship management, task assignments, reporting, and feedback—all in one place. Track your progress, set goals, log your learning, and access shared resources with a clean, user-friendly interface. Experience a smarter way to manage internships, built for real-world needs.
-            </p>
+<div class="container-fluid d-flex align-items-center justify-content-center py-5 bg-light hero-wrapper">
+    <div class="card shadow-lg rounded-4 border-0" style="max-width: 1200px; width: 100%; overflow: hidden;">
+        <div class="row g-0">
+
+            <div class="col-12 col-lg-6 d-none d-lg-block">
+                <img src="~/lib/Pictures/Index_1.png"
+                     alt="Mentor and Intern together on a project"
+                     class="hero-image" />
+            </div>
+
+            <div class="col-12 col-lg-6 d-flex flex-column justify-content-center">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center text-lg-start mb-4">
+                        <img src="~/lib/Pictures/IT_2.png" alt="InternTracker Logo" style="width: 80px; margin-bottom: 0.5rem;" />
+                        <h1 class="fw-bolder display-5">InternTracker</h1>
+                    </div>
+
+                    <p class="lead">
+                        A modern platform designed to make your internship program a success. Built for admins, mentors, and interns,
+                        it streamlines task management, progress tracking, and feedback—all in one place.
+                    </p>
+                    <p class="text-muted">
+                        Set goals, log your learning, and access shared resources through a clean, user-friendly interface.
+                    </p>
+
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-start mt-4">
+                        <a class="btn btn-primary btn-lg px-4 fw-bold" asp-area="" asp-controller="Account" asp-action="GetStarted">Get Started</a>
+                        <a class="btn btn-outline-dark btn-lg px-4" asp-area="" asp-controller="Account" asp-action="Login">Log In</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

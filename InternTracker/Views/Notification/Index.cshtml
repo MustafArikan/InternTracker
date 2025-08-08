@@ -2,43 +2,44 @@
 
 @{
     ViewData["Title"] = "Notifications";
+    Layout = "_Layout";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Stay updated with important alerts and messages.</p>
+        </div>
+    </div>
 
-@if (Model != null && Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Message</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (Model != null && Model.Any())
+    {
+        <div class="list-group">
             @foreach (var item in Model)
             {
-                <tr class="@(item.IsRead ? "text-muted" : "font-weight-bold")">
-                    <td>@Html.DisplayFor(modelItem => item.Message)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
-                    <td>@(item.IsRead ? "Read" : "Unread")</td>
-                    <td>
-                        @if (!item.IsRead)
-                        {
-                            <form asp-action="MarkAsRead" method="post" style="display:inline;">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button type="submit" class="btn btn-sm btn-primary">Mark as Read</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
+                <div class="list-group-item list-group-item-action @(item.IsRead ? "text-muted" : "")">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1 @(item.IsRead ? "fw-normal" : "fw-bold")">@item.Message</h5>
+                        <small>@item.CreatedDate.ToString("MMM dd, yyyy HH:mm")</small>
+                    </div>
+                    <p class="mb-1"><small>Status: @(item.IsRead ? "Read" : "Unread")</small></p>
+                    @if (!item.IsRead)
+                    {
+                        <form asp-action="MarkAsRead" method="post" class="mt-2">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary">Mark as Read</button>
+                        </form>
+                    }
+                </div>
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No notifications found.</p>
-}
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <h4 class="alert-heading">No Notifications!</h4>
+            <p>You currently have no notifications.</p>
+        </div>
+    }
+</div>

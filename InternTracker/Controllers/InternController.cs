@@ -22,7 +22,7 @@ namespace InternTracker.Controllers
             _webHostEnvironment = webHostEnvironment; 
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> MyTasks()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -839,9 +839,71 @@ namespace InternTracker.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var resourceFiles = await _context.ResourceFiles.ToListAsync();
+            var resourceFiles = await _context.ResourceFiles.Include(r => r.UploadedByUser).ToListAsync();
 
             return View(resourceFiles);
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var intern = await _context.AppUsers.FindAsync(userId.Value);
+            if (intern == null)
+            {
+                return NotFound();
+            }
+
+            var tasks = await _context.TaskItems.Where(t => t.AssignedToUserId == userId).ToListAsync();
+            var workSessions = await _context.WorkSessions.Where(ws => ws.UserId == userId).ToListAsync();
+            var goals = await _context.Goals.Where(g => g.UserId == userId).ToListAsync();
+            var reports = await _context.Reports.Where(r => r.UserId == userId).ToListAsync();
+
+            // Prepare data for charts
+            var taskStatusCounts = tasks.GroupBy(t => t.Status)
+                                        .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                        .ToList();
+
+            var timeSpentWeekly = workSessions.GroupBy(ws => ws.StartTime.Date.AddDays(-(int)ws.StartTime.DayOfWeek))
+                                                .Select(g => new { Week = g.Key, TotalMinutes = g.Sum(ws => ws.TotalMinutes) })
+                                                .OrderBy(x => x.Week)
+                                                .ToList();
+
+            var goalStatusCounts = goals.GroupBy(g => g.Status)
+                                      .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                                      .ToList();
+
+            var reportsSubmittedWeekly = reports.GroupBy(r => r.SubmissionDate.Date.AddDays(-(int)r.SubmissionDate.DayOfWeek))
+                                                .Select(g => new { Week = g.Key, Count = g.Count() })
+                                                .OrderBy(x => x.Week)
+                                                .ToList();
+
+            var viewModel = new InternDashboardViewModel
+            {
+                Intern = intern,
+                Tasks = tasks,
+                WorkSessions = workSessions,
+                Goals = goals,
+                Reports = reports,
+
+                TaskStatusLabels = taskStatusCounts.Select(x => x.Status).ToList(),
+                TaskStatusCounts = taskStatusCounts.Select(x => x.Count).ToList(),
+
+                TimeSpentWeeklyLabels = timeSpentWeekly.Select(x => x.Week.ToString("yyyy-MM-dd")).ToList(),
+                TimeSpentWeeklyData = timeSpentWeekly.Select(x => (double)x.TotalMinutes).ToList(),
+
+                GoalStatusLabels = goalStatusCounts.Select(x => x.Status).ToList(),
+                GoalStatusCounts = goalStatusCounts.Select(x => x.Count).ToList(),
+
+                ReportsSubmittedLabels = reportsSubmittedWeekly.Select(x => x.Week.ToString("yyyy-MM-dd")).ToList(),
+                ReportsSubmittedCounts = reportsSubmittedWeekly.Select(x => x.Count).ToList()
+            };
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Dashboard()
@@ -903,7 +965,7 @@ namespace InternTracker.Controllers
                 ReportsSubmittedCounts = reportsSubmittedWeekly.Select(x => x.Count).ToList()
             };
 
-            return View(viewModel);
+            return View("Dashboard", viewModel);
         }
     }
 }

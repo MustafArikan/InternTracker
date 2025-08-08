@@ -2,35 +2,39 @@
 
 @{
     ViewData["Title"] = "Log Work Session";
+    Layout = "_Layout";
 }
 
-<h2>Log Work Session</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center fw-bold mb-4">@ViewData["Title"]</h2>
+                    <form asp-action="LogWorkSession">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="StartTime" class="form-control" type="datetime-local" placeholder="Start Time" />
+                            <label asp-for="StartTime">Start Time</label>
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
 
-<h4>WorkSession</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="LogWorkSession">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" type="datetime-local" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <input asp-for="EndTime" class="form-control" type="datetime-local" placeholder="End Time" />
+                            <label asp-for="EndTime">End Time</label>
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Log Session</button>
+                            <a asp-action="Index" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" type="datetime-local" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

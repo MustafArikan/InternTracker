@@ -2,52 +2,72 @@
 
 @{
     ViewData["Title"] = "Manage Resource Files";
+    Layout = "_Layout";
 }
 
-<h2>Manage Resource Files</h2>
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-5 fw-bold">@ViewData["Title"]</h1>
+            <p class="text-muted">Upload, edit, and delete resource files for all users.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="UploadResourceFile" class="btn btn-primary fw-bold">
+                <i class="fas fa-upload me-2"></i>Upload New Resource
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="UploadResourceFile">Upload New Resource File</a>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FilePath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UploadDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UploadedByUser.Username)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                <a href="@item.FilePath" target="_blank">Download File</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UploadDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UploadedByUser.Username)
-            </td>
-            <td>
-                <a asp-action="EditResourceFile" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="DeleteResourceFile" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Uploaded By</th>
+                                <th scope="col">Upload Date</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.UploadedByUser.Username)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.UploadDate)</td>
+                                    <td class="text-end">
+                                        <a href="@item.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark me-1" title="Download File">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        <a asp-action="EditResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark me-1" title="Edit Resource">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a asp-action="DeleteResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete Resource"
+                                           onclick="return confirm('Are you sure you want to delete the resource: @item.Title?');">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center" role="alert">
+                    <h4 class="alert-heading">No Resources Found!</h4>
+                    <p>There are currently no resource files uploaded. Upload one to get started.</p>
+                    <hr>
+                    <a asp-action="UploadResourceFile" class="btn btn-success fw-bold">
+                        <i class="fas fa-upload me-2"></i>Upload the First Resource
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,143 @@
+@model IEnumerable<InternTracker.Models.TaskItem>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "My Tasks";
+    Layout = "_Layout";
+    var activeWorkSessionId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveWorkSessionId");
+    var activeTaskId = HttpContextAccessor.HttpContext.Session.GetInt32("ActiveTaskId");
+    var username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+}
+
+@section Styles {
+    <style>
+        .task-card {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+        }
+
+        .task-actions .btn {
+            margin-right: 5px;
+        }
+
+        .status-badge {
+            font-size: 0.9rem;
+            padding: 0.5em 0.8em;
+        }
+
+        .timer {
+            font-weight: bold;
+            color: var(--bs-primary);
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Welcome, @username!</h1>
+            <p class="text-muted">Here are your assigned tasks. Stay organized and track your progress.</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm task-card">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold">@item.Title</h5>
+                        <p class="card-text text-muted">@item.Description</p>
+                        <div class="mt-auto">
+                            <p class="mb-2">
+                                <small class="text-muted">Assigned: @item.AssignedDate.ToString("MMM dd, yyyy")</small>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span id="status-@item.Id" class="badge rounded-pill 
+                                    @if(item.Status == InternTracker.Models.TaskStatus.Completed) {<text>bg-success</text>}
+                                    else if(item.Status == InternTracker.Models.TaskStatus.InProgress) {<text>bg-primary</text>}
+                                    else {<text>bg-secondary</text>}">
+                                    @item.Status
+                                </span>
+                                @if (activeTaskId == item.Id)
+                                {
+                                    <span id="timer-@item.Id" class="timer"></span>
+                                }
+                            </div>
+                            <div class="task-actions">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                @if (activeWorkSessionId == null)
+                                {
+                                    if (item.Status == InternTracker.Models.TaskStatus.NotStarted)
+                                    {
+                                        <a asp-action="Start" asp-route-id="@item.Id" class="btn btn-success btn-sm" title="Start Task">
+                                            <i class="fas fa-play"></i> Start
+                                        </a>
+                                    }
+                                }
+                                else if (activeTaskId == item.Id)
+                                {
+                                    <a asp-action="Stop" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Stop Task">
+                                        <i class="fas fa-stop"></i> Stop
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let timerInterval;
+        let activeTaskId = @(activeTaskId ?? 0);
+
+        function updateTimer(startTime, timerElement) {
+            const start = new Date(startTime).getTime();
+            timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = now - start;
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        if (activeTaskId > 0) {
+            const startTime = localStorage.getItem(`startTime-${activeTaskId}`);
+            if (startTime) {
+                const timerElement = document.getElementById(`timer-${activeTaskId}`);
+                if (timerElement) {
+                    updateTimer(startTime, timerElement);
+                }
+            }
+        }
+
+        document.querySelectorAll('.btn-success').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const taskId = this.href.split('/').pop();
+                localStorage.setItem(`startTime-${taskId}`, new Date().toISOString());
+            });
+        });
+
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const taskId = this.href.split('/').pop();
+                clearInterval(timerInterval);
+                localStorage.removeItem(`startTime-${taskId}`);
+            });
+        });
+    });
+    </script>
+}

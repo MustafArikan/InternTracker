@@ -1,0 +1,63 @@
+@model InternTracker.Models.AppUser
+
+@{
+    ViewData["Title"] = "Delete Account";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="card-title">Are you absolutely sure you want to delete your account?</h5>
+                    <p class="text-muted">This action is irreversible. All your data, including tasks, journal entries, goals, and reports, will be permanently deleted.</p>
+                    
+                    <div class="alert alert-warning">
+                        <p class="mb-0">To confirm deletion, please type "DELETE" into the box below:</p>
+                    </div>
+
+                    <form asp-action="DeleteAccount" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-floating mb-3">
+                            <input type="text" id="confirmText" name="confirmText" class="form-control" placeholder="Type DELETE to confirm" />
+                            <label for="confirmText">Type DELETE to confirm</label>
+                        </div>
+                        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                        {
+                            <div class="alert alert-danger mt-2">@ViewBag.ErrorMessage</div>
+                        }
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger" disabled id="deleteButton">Delete My Account</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmInput = document.getElementById('confirmText');
+            const deleteButton = document.getElementById('deleteButton');
+
+            confirmInput.addEventListener('keyup', function () {
+                if (confirmInput.value === 'DELETE') {
+                    deleteButton.disabled = false;
+                } else {
+                    deleteButton.disabled = true;
+                }
+            });
+        });
+    </script>
+}

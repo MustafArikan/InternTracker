@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Authentication;
 
 namespace InternTracker.Controllers
 {
@@ -216,6 +217,74 @@ namespace InternTracker.Controllers
                 return View(model);
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _context.AppUsers.FindAsync(userId.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount(int id, string confirmText)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null || userId != id)
+            {
+                return Unauthorized();
+            }
+
+            if (confirmText != "DELETE")
+            {
+                ViewBag.ErrorMessage = "You must type 'DELETE' to confirm account deletion.";
+                var user = await _context.AppUsers.FindAsync(id);
+                return View(user);
+            }
+
+            var userToDelete = await _context.AppUsers.FindAsync(id);
+            if (userToDelete == null)
+            {
+                return NotFound();
+            }
+
+            // Delete associated data (tasks, journal entries, goals, reports, work sessions, notifications)
+            _context.TaskItems.RemoveRange(_context.TaskItems.Where(t => t.AssignedToUserId == id));
+            _context.JournalEntries.RemoveRange(_context.JournalEntries.Where(j => j.UserId == id));
+            _context.Goals.RemoveRange(_context.Goals.Where(g => g.UserId == id));
+            _context.Reports.RemoveRange(_context.Reports.Where(r => r.UserId == id));
+            _context.WorkSessions.RemoveRange(_context.WorkSessions.Where(ws => ws.UserId == id));
+            _context.Notifications.RemoveRange(_context.Notifications.Where(n => n.UserId == id));
+
+            // Delete profile picture if it exists and is not the default
+            if (!string.IsNullOrEmpty(userToDelete.ProfilePicturePath) && userToDelete.ProfilePicturePath != "/images/default-profile.png")
+            {
+                var oldFilePath = Path.Combine(_hostEnvironment.WebRootPath, userToDelete.ProfilePicturePath.TrimStart('/'));
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Delete(oldFilePath);
+                }
+            }
+
+            _context.AppUsers.Remove(userToDelete);
+            await _context.SaveChangesAsync();
+
+            await HttpContext.SignOutAsync("CookieAuth");
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("GetStarted", "Account"); // Redirect to a public page after deletion
         }
     }
 }
