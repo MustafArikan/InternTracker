@@ -18,7 +18,7 @@
                         <p class="mb-1"><strong>Intern's Feedback:</strong> @Model.Feedback</p>
                         <p class="mb-1">
                             <strong>Report File:</strong> 
-                            <a href="@Model.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark ms-2">Download Report</a>
+                            <a href="@Model.FilePath" target="_blank" download class="btn btn-sm btn-outline-secondary ms-2">Download Report</a>
                         </p>
                     </div>
 
@@ -33,7 +33,7 @@
 
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">Save Feedback</button>
-                            <a asp-action="ViewInternDetails" asp-route-id="@Model.UserId" class="btn btn-outline-dark">Back to Intern Details</a>
+                            <a asp-action="ViewInternDetails" asp-route-id="@Model.UserId" class="btn btn-outline-secondary">Back to Intern Details</a>
                         </div>
                     </form>
                 </div>

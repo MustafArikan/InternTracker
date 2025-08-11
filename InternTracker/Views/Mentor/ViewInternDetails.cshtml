@@ -93,7 +93,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-end">
-                                                <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-sm btn-outline-dark me-1">Edit</a>
+                                                <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
                                                 <a asp-action="DeleteTask" asp-route-id="@task.Id" class="btn btn-sm btn-outline-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -222,7 +222,7 @@
                                 <div class="list-group-item">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">Report on @report.SubmissionDate.ToString("MMMM dd, yyyy")</h5>
-                                        <a href="@report.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark">View File</a>
+                                        <a href="@report.FilePath" target="_blank" download class="btn btn-sm btn-outline-secondary">View File</a>
                                     </div>
                                     <p class="mb-1"><strong>Intern Feedback:</strong> @report.Feedback</p>
                                     <p class="mb-1"><strong>Mentor Feedback:</strong> @(report.MentorFeedback ?? "No feedback yet.")</p>
@@ -243,6 +243,6 @@
     </div>
 
     <div class="text-center mt-4">
-        <a asp-action="Index" class="btn btn-outline-dark">Back to Intern List</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Intern List</a>
     </div>
 </div>
