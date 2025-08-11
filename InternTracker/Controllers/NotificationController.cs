@@ -65,7 +65,7 @@ namespace InternTracker.Controllers
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId))
             {
-                return Json(0); // Or handle as unauthorized
+                return Json(0); 
             }
 
             var unreadCount = await _context.Notifications
