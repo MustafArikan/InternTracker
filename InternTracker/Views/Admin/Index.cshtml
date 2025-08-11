@@ -48,7 +48,7 @@
                                     <td>@Html.DisplayFor(modelItem => item.Email)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Role)</td>
                                     <td class="text-end">
-                                        <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark me-1" title="Edit @item.Username">
+                                        <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1" title="Edit @item.Username">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
                                         <a asp-action="DeleteUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete @item.Username"

@@ -20,8 +20,7 @@ namespace InternTracker.Models
 
         public bool IsRead { get; set; } = false;
 
-        // Optional: To link to the source of the notification (e.g., Task, Report, ResourceFile)
-        public string NotificationType { get; set; } // e.g., "TaskAssigned", "ResourceUploaded", "ReportSubmitted"
+        public string NotificationType { get; set; } 
         public int? RelatedEntityId { get; set; } // ID of the related Task, Report, or ResourceFile
     }
 }

@@ -232,8 +232,7 @@ namespace InternTracker.Controllers
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId))
             {
-                // User is not authenticated or the claim is missing.
-                // Redirecting to login is the correct action here.
+
                 return RedirectToAction("Login", "Account");
             }
 
@@ -270,7 +269,6 @@ namespace InternTracker.Controllers
             // Check if validation passed.
             if (ModelState.IsValid)
             {
-                // Manually create a new JournalEntry object.
                 var journalEntry = new Models.JournalEntry
                 {
                     EntryText = EntryText,
@@ -288,14 +286,12 @@ namespace InternTracker.Controllers
                     return View(journalEntry);
                 }
 
-                // Add the now-complete object to the context and save.
                 _context.Add(journalEntry);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(JournalEntries));
             }
 
-            // If ModelState is invalid, return the view.
-            // We create a temporary object to pass back the user's input.
+
             var invalidModel = new Models.JournalEntry { EntryText = EntryText };
             return View(invalidModel);
         }

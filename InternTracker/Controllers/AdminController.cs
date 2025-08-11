@@ -83,7 +83,6 @@ namespace InternTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(int id) 
         {
-            // First, fetch the full, original user from the database.
             var userToUpdate = await _context.AppUsers.FindAsync(id);
 
             if (userToUpdate == null)
@@ -95,24 +94,20 @@ namespace InternTracker.Controllers
             if (await TryUpdateModelAsync<AppUser>(
                 userToUpdate,
                 "", 
-                u => u.Role)) //ONLY update the Role property.
+                u => u.Role)) 
             {
                 try
                 {
-                    // If the model update was successful, save the changes to the database.
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    // Add a model error if a concurrency issue happens
                     ModelState.AddModelError("", "Unable to save changes. " +
                         "The user was updated by another administrator. Please go back and try again.");
                 }
             }
 
-            // If TryUpdateModelAsync fails or there's an error,
-            // return to the view, showing the user's original data.
             return View(userToUpdate);
         }
 
@@ -198,7 +193,6 @@ namespace InternTracker.Controllers
                 }
 
 
-                // 2. Handle the file upload logic 
                 var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "resources");
                 if (!Directory.Exists(uploadsFolder))
                 {
@@ -211,15 +205,12 @@ namespace InternTracker.Controllers
                     await file.CopyToAsync(fileStream);
                 }
 
-                // 3. Set the final required property on our object
                 resourceFile.FilePath = "/resources/" + uniqueFileName;
 
 
-                // 4. Add the now-complete object to the context and save
                 _context.Add(resourceFile);
                 await _context.SaveChangesAsync();
 
-                // Notify all interns about the new resource
                 var interns = await _context.AppUsers.Where(u => u.Role == UserRole.Intern).ToListAsync();
                 foreach (var intern in interns)
                 {

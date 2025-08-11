@@ -40,12 +40,12 @@
                                     <td>@Html.DisplayFor(modelItem => item.UploadedByUser.Username)</td>
                                     <td>@Html.DisplayFor(modelItem => item.UploadDate)</td>
                                     <td class="text-end">
-                                        <a href="@item.FilePath" target="_blank" download class="btn btn-sm btn-outline-dark me-1" title="Download File">
+                                        <a href="@item.FilePath" target="_blank" download class="btn btn-sm btn-outline-secondary me-1" title="Download File">
                                             <i class="fas fa-download"></i> Download
                                         </a>
                                         @if (item.UploadedByUserId.ToString() == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
                                         {
-                                            <a asp-action="EditResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark" title="Edit Resource">
+                                            <a asp-action="EditResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Edit Resource">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
                                         }

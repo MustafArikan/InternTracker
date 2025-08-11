@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,86 +9,76 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InternTrack.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
+    <style>
+        #themeToggle {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm border-bottom box-shadow mb-3" id="mainNavbar">
             <div class="container-fluid">
-
                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/lib/Pictures/IT_2.png" alt="InternTracker Logo" style="height: 30px; margin-right: 10px;">
                     <span class="fw-bold">InternTracker</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav">
                         @if (Context.Session.GetString("Role") == "Admin")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="ResourceFiles">Manage Resources</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="SystemReports">System Reports</a>
-                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="ResourceFiles">Manage Resources</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="SystemReports">System Reports</a></li>
                         }
                         else if (Context.Session.GetString("Role") == "Mentor")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Mentor" asp-action="Index">Mentor Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Mentor" asp-action="ResourceFiles">Resources</a>
-                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Mentor" asp-action="Index">Mentor Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Mentor" asp-action="ResourceFiles">Resources</a></li>
                         }
                         else if (Context.Session.GetString("Role") == "Intern")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Index">Overview</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Dashboard">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="MyTasks">My Tasks</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="LogWorkSession">Log Work</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="JournalEntries">Journal</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="Goals">Goals</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Intern" asp-action="ResourceFiles">Resources</a>
-                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="Index">Overview</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="Dashboard">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="MyTasks">My Tasks</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="LogWorkSession">Log Work</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="JournalEntries">Journal</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="Goals">Goals</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Intern" asp-action="ResourceFiles">Resources</a></li>
                         }
                     </ul>
 
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-2">
+                            <button id="themeToggle" class="nav-link" title="Toggle theme">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                        </li>
+
                         @if (Context.Session.GetString("Username") != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index" title="Notifications">
+                                <a class="nav-link" asp-controller="Notification" asp-action="Index" title="Notifications">
                                     <i class="fas fa-bell"></i>
                                     <span class="badge bg-danger" id="unreadNotificationsCount">0</span>
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                     Hello, @Context.Session.GetString("Username")!
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
@@ -101,10 +91,10 @@
                         else
                         {
                             <li class="nav-item me-3">
-                                <a class="btn btn-primary fw-bold" asp-area="" asp-controller="Account" asp-action="GetStarted">Get Started</a>
+                                <a class="btn btn-primary fw-bold" asp-controller="Account" asp-action="GetStarted">Get Started</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-outline-dark" asp-area="" asp-controller="Account" asp-action="Login">Log In</a>
+                                <a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Login">Log In</a>
                             </li>
                         }
                     </ul>
@@ -112,15 +102,17 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container flex-grow-1">
+        <main role="main" class="pb-3 flex-grow-1">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-auto py-3 bg-light">
+    <footer class="border-top footer mt-auto py-3 bg-body-tertiary">
         <div class="container">
-            &copy; 2025 - InternTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+            &copy; 2025 - InternTracker -
+            <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy Policy</a>
         </div>
     </footer>
 
@@ -129,19 +121,41 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    @if (Context.Session.GetString("Username") != null)
-    {
-        <script>
-            $(document).ready(function () {
-                function getUnreadNotificationsCount() {
-                    $.get("/Notification/GetUnreadCount", function (data) {
-                        $("#unreadNotificationsCount").text(data);
-                    });
-                }
-                getUnreadNotificationsCount();
-                setInterval(getUnreadNotificationsCount, 30000);
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById("themeToggle");
+            const icon = themeToggle.querySelector("i");
+
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                html.setAttribute("data-bs-theme", savedTheme);
+                icon.className = savedTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
+            }
+
+            themeToggle.addEventListener("click", function () {
+                let currentTheme = html.getAttribute("data-bs-theme");
+                let newTheme = currentTheme === "dark" ? "light" : "dark";
+                html.setAttribute("data-bs-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                icon.className = newTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
             });
-        </script>
-    }
+        });
+
+        @if (Context.Session.GetString("Username") != null)
+        {
+                <text>
+                $(document).ready(function () {
+                    function getUnreadNotificationsCount() {
+                        $.get("/Notification/GetUnreadCount", function (data) {
+                            $("#unreadNotificationsCount").text(data);
+                        });
+                    }
+                    getUnreadNotificationsCount();
+                    setInterval(getUnreadNotificationsCount, 30000);
+                });
+                </text>
+        }
+    </script>
 </body>
 </html>

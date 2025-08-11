@@ -11,9 +11,9 @@ namespace InternTracker.Models
         public List<Goal> Goals { get; set; }
         public List<Report> Reports { get; set; }
         public List<WorkSession> WorkSessions { get; set; }
-        public List<Notification> Notifications { get; set; } // Potentially useful for activity logs
+        public List<Notification> Notifications { get; set; } 
 
-        // Data for Charts (pre-processed for easier Chart.js consumption)
+        // Data for Charts
         public List<string> TaskStatusLabels { get; set; }
         public List<int> TaskStatusCounts { get; set; }
 

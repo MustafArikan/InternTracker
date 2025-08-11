@@ -85,20 +85,16 @@ namespace InternTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Create a brand new TaskItem instance.
                 var newTask = new TaskItem
                 {
-                    // Map the safe properties from the form data to our new object.
                     AssignedToUserId = taskDataFromForm.AssignedToUserId,
                     Title = taskDataFromForm.Title,
                     Description = taskDataFromForm.Description,
 
-                    // Set the server-side properties that the user can't control.
                     AssignedDate = DateTime.Now,
                     Status = Models.TaskStatus.NotStarted
                 };
 
-                // Add the *new* object to the context.
                 _context.Add(newTask);
                 await _context.SaveChangesAsync();
 
@@ -437,7 +433,6 @@ namespace InternTracker.Controllers
             var reports = await _context.Reports.Where(r => r.UserId == id).ToListAsync();
             var workSessions = await _context.WorkSessions.Include(ws => ws.TaskItem).Where(ws => ws.UserId == id).ToListAsync();
 
-            // Prepare data for individual work session chart
             var individualWorkSessions = workSessions
                 .OrderBy(ws => ws.StartTime)
                 .Select(ws => new { Label = ws.StartTime.ToString("MM/dd HH:mm"), ws.TotalMinutes })
@@ -486,7 +481,6 @@ namespace InternTracker.Controllers
             {
                 activityLogs.Add($"Work session logged from {ws.StartTime.ToShortTimeString()} to {ws.EndTime.ToShortTimeString()} on {ws.StartTime.ToShortDateString()} ({ws.TotalMinutes} minutes).");
             }
-            // Add more activity types as needed
             activityLogs = activityLogs.OrderByDescending(a => a).ToList(); // Simple chronological sort
 
             var viewModel = new InternProgressDashboardViewModel
