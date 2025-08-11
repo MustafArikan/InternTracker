@@ -4,7 +4,45 @@
     ViewData["Title"] = "Resource Files";
     Layout = "_Layout";
 }
+@section Styles {
+    <style>
+        .stat-card {
+            border-left: 5px solid var(--bs-primary);
+            transition: all 0.2s ease-in-out;
+        }
 
+            .stat-card:hover {
+                transform: translateY(-3px);
+                border-left-width: 7px;
+            }
+
+        .nav-card {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .nav-card:hover {
+                transform: scale(1.03);
+                box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+            }
+
+            .nav-card .card-body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 150px;
+            }
+
+        .nav-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--bs-primary);
+        }
+    </style>
+}
 <div class="container py-5">
     <div class="row mb-4 align-items-center">
         <div class="col">
