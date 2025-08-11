@@ -18,47 +18,44 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            @if (Model.Any())
+    <div class="row">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
             {
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead class="table-body">
-                            <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Uploaded By</th>
-                                <th scope="col">Upload Date</th>
-                                <th scope="col" class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.UploadedByUser.Username)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.UploadDate)</td>
-                                    <td class="text-end">
-                                        <a href="@item.FilePath" target="_blank" download class="btn btn-sm btn-outline-secondary me-1" title="Download File">
-                                            <i class="fas fa-download"></i> Download
-                                        </a>
-                                        <a asp-action="EditResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1" title="Edit Resource">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a asp-action="DeleteResourceFile" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete Resource"
-                                           onclick="return confirm('Are you sure you want to delete the resource: @item.Title?');">
-                                            <i class="fas fa-trash-alt"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm nav-card">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-file-alt fa-2x text-primary me-3"></i>
+                                <div>
+                                    <h5 class="card-title mb-0">@item.Title</h5>
+                                    <small class="text-muted">Uploaded on @item.UploadDate.ToString("MMM dd, yyyy") by @item.UploadedByUser.Username</small>
+                                </div>
+                            </div>
+                            <div class="mt-auto d-flex justify-content-start">
+                                <a href="@item.FilePath" target="_blank" download class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="fas fa-download me-1"></i> Download
+                                </a>
+                                <a href="@item.FilePath" target="_blank" class="btn btn-outline-secondary btn-sm me-2">
+                                    <i class="fas fa-external-link-alt me-1"></i> Open
+                                </a>
+                                <a asp-action="EditResourceFile" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm me-2">
+                                    <i class="fas fa-edit me-1"></i> Edit
+                                </a>
+                                <a asp-action="DeleteResourceFile" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to delete the resource: @item.Title?');">
+                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
-            else
-            {
+        }
+        else
+        {
+            <div class="col-12">
                 <div class="alert alert-info text-center" role="alert">
                     <h4 class="alert-heading">No Resources Found!</h4>
                     <p>There are currently no resource files uploaded. Upload one to get started.</p>
@@ -67,7 +64,7 @@
                         <i class="fas fa-upload me-2"></i>Upload the First Resource
                     </a>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
