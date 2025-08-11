@@ -23,7 +23,7 @@
         <nav class="navbar navbar-expand-sm border-bottom box-shadow mb-3" id="mainNavbar">
             <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/lib/Pictures/IT_2.png" alt="InternTracker Logo" style="height: 30px; margin-right: 10px;">
+                    <img id="navbarLogo" src="~/lib/Pictures/IT_2.png" alt="InternTracker Logo" style="height: 30px; margin-right: 10px;">
                     <span class="fw-bold">InternTracker</span>
                 </a>
 
@@ -127,11 +127,26 @@
             const html = document.documentElement;
             const themeToggle = document.getElementById("themeToggle");
             const icon = themeToggle.querySelector("i");
+            const navbarLogo = document.getElementById("navbarLogo");
+            const indexPageLogo = document.getElementById("indexPageLogo"); 
+
+            function updateLogos(currentTheme) {
+                const logoSrc = currentTheme === "dark" ? "/lib/Pictures/IT_Dark.png" : "/lib/Pictures/IT_2.png";
+                if (navbarLogo) {
+                    navbarLogo.src = logoSrc;
+                }
+                if (indexPageLogo) {
+                    indexPageLogo.src = logoSrc;
+                }
+            }
 
             const savedTheme = localStorage.getItem("theme");
             if (savedTheme) {
                 html.setAttribute("data-bs-theme", savedTheme);
                 icon.className = savedTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
+                updateLogos(savedTheme); 
+            } else {
+                updateLogos("light");
             }
 
             themeToggle.addEventListener("click", function () {
@@ -140,6 +155,7 @@
                 html.setAttribute("data-bs-theme", newTheme);
                 localStorage.setItem("theme", newTheme);
                 icon.className = newTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
+                updateLogos(newTheme); 
             });
         });
 
