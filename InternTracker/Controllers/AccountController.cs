@@ -127,5 +127,42 @@ namespace InternTracker.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult RegisterAdmin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterAdmin(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (existingUser != null)
+                { 
+                    ModelState.AddModelError("Email", "User with this email already exists.");
+                    return View(model);
+                }
+
+                var user = new AppUser
+                {
+                    Username = model.Username,
+                    Email = model.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+                    Role = UserRole.Admin,
+                    ProfilePicturePath = "",
+                    RegistrationDate = DateTime.Now
+                };
+
+                _context.AppUsers.Add(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Login");
+            }
+            return View(model);
+        }
     }
 }
