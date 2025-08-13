@@ -82,6 +82,10 @@ InternTracker is a comprehensive web application designed to streamline the mana
 -   **Admin Panel:** Accessible to users with the "Admin" role for managing users and system resources.
 -   **Mentor Panel:** Accessible to users with the "Mentor" role for overseeing interns and assigning tasks.
 -   **Intern Panel:** Accessible to users with the "Intern" role for managing their tasks, journals, goals, and reports.
+-   **Note:** To create an administrator account, navigate to the /Account/RegisterAdmin page in your browser. This
+  special registration page will create a user with the 'Admin' role, giving you full access to the system's
+   administrative features. All other users who register through the main "Get Started" link will be
+  assigned the 'Intern' role by default.
 
 ## Contributing
 
