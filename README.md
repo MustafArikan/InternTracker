@@ -90,3 +90,9 @@ InternTracker is a comprehensive web application designed to streamline the mana
 ## Contributing
 
 Feel free to fork the repository, open issues, and submit pull requests.
+
+---
+
+## Author
+Mustafa Arıkan
+
