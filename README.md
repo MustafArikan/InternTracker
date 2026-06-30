@@ -87,6 +87,12 @@ InternTracker is a comprehensive web application designed to streamline the mana
    administrative features. All other users who register through the main "Get Started" link will be
   assigned the 'Intern' role by default.
 
+-   **⚠️ Security Note:** The `/Account/RegisterAdmin` endpoint is intentionally left unprotected for local/demo
+  use, so that anyone cloning the repo can easily create an admin account without a seeding step. This project
+  is **not deployed to production** and is not intended to be. If you reuse this code in a real deployment, you
+  must secure or remove this endpoint first (e.g. restrict it to the `Development` environment, require an
+  existing admin to be signed in, or use a one-time setup token).
+
 ## Contributing
 
 Feel free to fork the repository, open issues, and submit pull requests.
