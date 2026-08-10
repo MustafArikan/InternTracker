@@ -101,4 +101,3 @@ Feel free to fork the repository, open issues, and submit pull requests.
 
 ## Author
 Mustafa Arıkan
-
