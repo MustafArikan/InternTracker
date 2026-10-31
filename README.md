@@ -1,103 +1,137 @@
 # InternTracker
 
-InternTracker is a comprehensive web application designed to streamline the management and tracking of intern activities, progress, and resources within an organization. It provides distinct roles for Admins, Mentors, and Interns, each with tailored functionalities to facilitate efficient collaboration and oversight.
-![](InternTracker/wwwroot/Git_Images/Main.png)
-## Features
+Manage intern tasks, journals, goals, reports, and learning resources through a role-based ASP.NET Core MVC application.
 
-### User Management & Authentication
-- **Secure User Accounts:** Admins can create and manage user accounts with different roles (Admin, Mentor, Intern).
-- **Authentication:** Secure login system with password hashing using BCrypt.NET-Next.
-- **Profile Management:** Users can update their email, change passwords, and upload profile pictures.
-- **Account Deletion:** Users can delete their accounts, which also removes associated data.
+InternTracker is an individual learning and demonstration project with Admin, Mentor, and Intern workflows. It uses server-rendered Razor views and SQL Server persistence. Additional authorization, upload-hardening, and operational work is required before a production deployment.
 
-### Intern-Specific Features
-- **Task Management:** Interns can view assigned tasks, update their status (Not Started, In Progress, Completed), and log work sessions against tasks.
-- **Journaling:** Interns can create, edit, and delete daily journal entries to reflect on their work and learning.
-- **Goal Setting:** Interns can set personal goals, track their status (Active, Completed, Reflected), and add reflections.
-- **Report Submission:** Interns can submit reports, including file uploads, and receive feedback from mentors.
-- **Dashboard:** A personalized dashboard for interns to view their tasks, work sessions, goals, and reports, with visual progress indicators.
-![](InternTracker/wwwroot/Git_Images/Intern.png)
-### Mentor-Specific Features
-- **Intern Oversight:** Mentors can view details of assigned interns, including their tasks, journal entries, goals, reports, and work sessions.
-- **Task Assignment:** Mentors can assign new tasks to interns.
-- **Feedback:** Mentors can provide feedback on submitted intern reports.
-- **Resource Sharing:** Mentors can upload and manage resource files for interns.
-- **Progress Dashboard:** Detailed progress dashboard for each intern, showing task status, work session logs, journal entry counts, and report submission trends.
-![](InternTracker/wwwroot/Git_Images/Mentor.png)
-### Admin-Specific Features
-- **User Administration:** Admins have full control over user accounts, including creation, editing (e.g., changing roles), and deletion.
-- **Resource Management:** Admins can upload, edit, and delete resource files accessible to all users.
-- **System Reports:** Generate system-wide reports on user registrations, resource uploads by role, and other key metrics.
-![](InternTracker/wwwroot/Git_Images/Admin.png)
-### General Features
-- **Notifications:** Users receive notifications for relevant events (e.g., new tasks assigned, new resources uploaded, reports submitted).
-- **File Uploads:** Secure handling of file uploads for profile pictures, reports, and resource files.
-- **Session Management:** Utilizes ASP.NET Core's session management for user state.
+## Key Features
 
-## Technologies Used
+- Cookie authentication with BCrypt password hashing and session-backed user context.
+- Intern tasks, work sessions, journals, goals, report uploads, and notifications.
+- Mentor task assignment, progress dashboards, and report feedback.
+- Administrator user/role management, resources, and system reports.
+- Profile email/password changes and profile pictures.
+- Demo administrator registration gated by Development mode and explicit configuration.
 
-- **Backend:** ASP.NET Core 9.0 (C#)
-- **Database:** SQL Server (via Entity Framework Core)
-- **Authentication:** ASP.NET Core Identity with Cookie Authentication, BCrypt.NET-Next for password hashing.
-- **Image Processing:** SixLabors.ImageSharp
-- **Frontend:** HTML, CSS, JavaScript (Razor Views)
-- **Dependency Management:** NuGet, npm (for frontend packages if any, though primarily server-rendered)
+## Tech Stack
 
-## Setup and Installation
+| Layer | Technology |
+|---|---|
+| Application | C#, ASP.NET Core MVC 9, Razor |
+| Persistence | Entity Framework Core 9, SQL Server |
+| Authentication | ASP.NET Core cookie authentication, BCrypt.Net-Next |
+| Interface | HTML, CSS, JavaScript, Chart.js |
+| Regression tests | xUnit, ASP.NET Core test host |
 
-1.  **Prerequisites:**
-    -   .NET 9.0 SDK
-    -   SQL Server (LocalDB or full instance)
-    -   Node.js and npm (if frontend dependencies are managed via npm)
+Authentication is custom cookie-based application code; it does not use the ASP.NET Core Identity account-management framework.
 
-2.  **Clone the Repository:**
-    ```bash
-    git clone https://github.com/MustafArikan/InternTracker.git
-    cd InternTracker/InternTracker
-    ```
+## Architecture & Project Structure
 
-3.  **Database Configuration:**
-    -   Open `appsettings.json` (and `appsettings.Development.json`).
-    -   Update the `ConnectionStrings:InternTrackerContext` to point to your SQL Server instance.
-    -   Example: `"Server=YourServerName;Database=InternTrackerDB;Trusted_Connection=True;MultipleActiveResultSets=true"`
+```text
+.
+├── InternTracker.sln
+├── InternTracker/
+│   ├── Controllers/       # Role workflows and account/profile actions
+│   ├── Models/            # Entities and view models
+│   ├── Data/              # EF Core database context
+│   ├── Migrations/        # SQL Server schema migrations
+│   ├── Views/             # Server-rendered Razor UI
+│   ├── wwwroot/           # Static assets and local uploaded files
+│   └── Program.cs         # Authentication, session, MVC, persistence setup
+├── InternTracker.Tests/   # Security regression tests
+├── .config/               # Repository-local EF CLI tool manifest
+└── .github/workflows/     # Build and regression checks
+```
 
-4.  **Run Migrations:**
-    -   Open a terminal in the `InternTracker/InternTracker` directory.
-    -   Apply database migrations to create the schema:
-        ```bash
-        dotnet ef database update
-        ```
+Controllers use EF Core directly. Admin and Mentor controllers have role requirements; profile actions require authentication. The current mentor workflow lists all interns rather than maintaining a separate mentor-to-intern assignment model.
 
-5.  **Run the Application:**
-    ```bash
-    dotnet run
-    ```
-    The application will typically run on `https://localhost:7000` (or a similar port).
+## Getting Started
 
-## How to Use
+Install the .NET 9 SDK and a reachable SQL Server instance. Windows LocalDB is suitable for a local demo. The repository includes the client assets used by Razor views; npm is not required for the server build.
 
--   **Registration:** New users can register via the "Get Started" link. By default, new registrations are for the "Intern" role.
--   **Login:** Use the registered credentials to log in.
--   **Role-Based Access:** The application automatically redirects users to their respective dashboards based on their role (Admin, Mentor, Intern).
--   **Admin Panel:** Accessible to users with the "Admin" role for managing users and system resources.
--   **Mentor Panel:** Accessible to users with the "Mentor" role for overseeing interns and assigning tasks.
--   **Intern Panel:** Accessible to users with the "Intern" role for managing their tasks, journals, goals, and reports.
--   **Note:** To create an administrator account, navigate to the /Account/RegisterAdmin page in your browser. This
-  special registration page will create a user with the 'Admin' role, giving you full access to the system's
-   administrative features. All other users who register through the main "Get Started" link will be
-  assigned the 'Intern' role by default.
+```bash
+git clone https://github.com/MustafArikan/InternTracker.git
+cd InternTracker
+dotnet restore InternTracker.sln
+dotnet tool restore
+```
 
--   **⚠️ Security Note:** The `/Account/RegisterAdmin` endpoint is intentionally left unprotected for local/demo
-  use, so that anyone cloning the repo can easily create an admin account without a seeding step. This project
-  is **not deployed to production** and is not intended to be. If you reuse this code in a real deployment, you
-  must secure or remove this endpoint first (e.g. restrict it to the `Development` environment, require an
-  existing admin to be signed in, or use a one-time setup token).
+Set the database connection before applying migrations. For a PowerShell LocalDB example:
+
+```powershell
+$env:ConnectionStrings__InternTrackerContext = 'Server=(localdb)\MSSQLLocalDB;Database=InternTrackerDemo;Trusted_Connection=True;MultipleActiveResultSets=true'
+dotnet ef database update --project InternTracker
+dotnet run --project InternTracker --launch-profile https
+```
+
+The configured HTTPS launch profile uses `https://localhost:7289`; its HTTP endpoint is `http://localhost:5095`. Trust your local development certificate if your browser requires it.
+
+## Configuration
+
+| Key | Purpose |
+|---|---|
+| `ConnectionStrings__InternTrackerContext` | SQL Server connection; environment value overrides tracked defaults |
+| `ASPNETCORE_ENVIRONMENT` | Runtime environment; the launch profiles select `Development` |
+| `Demo__EnableAdminRegistration` | Defaults to false; permits demo admin registration only in Development |
+
+To bootstrap a local demonstration administrator, start the app from a PowerShell session with:
+
+```powershell
+$env:Demo__EnableAdminRegistration = 'true'
+dotnet run --project InternTracker --launch-profile https
+```
+
+Open `/Account/RegisterAdmin`, create the demo administrator, then remove the variable and restart. Both GET and POST actions return 404 when the gate is closed. Production mode keeps the route closed even when the flag is set. The flag enables registration for anyone who can reach that Development instance; use it only on your own local machine.
+
+Never place real database credentials in tracked settings files.
+
+## Usage
+
+1. Register through **Get Started** to create an Intern account.
+2. Sign in to reach the dashboard associated with your role.
+3. Use the Admin area to manage users and roles and the Mentor area to assign tasks and review reports.
+4. Use the Intern area to record work, maintain journals/goals, and submit reports.
+
+![Application landing page](InternTracker/wwwroot/Git_Images/Main.png)
+
+Existing role screenshots are available in [wwwroot/Git_Images](InternTracker/wwwroot/Git_Images).
+
+## Testing
+
+```bash
+dotnet test InternTracker.Tests/InternTracker.Tests.csproj --configuration Release
+```
+
+The test host exercises both administrator-registration actions across environment/flag combinations and verifies anonymous profile requests are challenged. It does not require SQL Server because these cases stop before database writes. Full task/report workflows and database migrations still need integration testing with SQL Server.
+
+## Development & Quality
+
+```bash
+dotnet build InternTracker.sln --configuration Release
+dotnet list InternTracker/InternTracker.csproj package --vulnerable --include-transitive
+```
+
+GitHub Actions builds the app and runs the regression suite on pull requests and pushes to `master`. Nullable-analysis warnings remain in the existing application; a successful build does not mean they have been resolved. The npm manifest's placeholder `test` command is not the .NET test suite.
+
+## Deployment
+
+No production deployment is configured. Before exposing an instance, review per-record authorization, upload validation and private file delivery, persistence/backup of uploads and database, authentication/session behavior, secure transport, dependency updates, and error handling. The demo admin gate addresses one entry point and is not a complete production-security review.
+
+## Roadmap
+
+- Add SQL Server integration tests for role and record-ownership boundaries.
+- Replace public static upload storage with authorized file delivery and validated file types/sizes.
+- Remove nullability warnings and align session lifetime with authentication.
+- Plan a supported framework upgrade and documented production bootstrap process.
 
 ## Contributing
 
-Feel free to fork the repository, open issues, and submit pull requests.
+Use focused pull requests with a reproduction and regression test for behavior changes. Preserve the existing role workflows, never include local database credentials or uploaded personal files, and report build/test results.
 
----
+## License
+
+Distributed under the [MIT License](LICENSE).
 
 ## Author
-Mustafa Arıkan
+
+[Mustafa Arıkan](https://github.com/MustafArikan)

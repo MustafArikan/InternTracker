@@ -7,9 +7,11 @@ using BCrypt.Net;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InternTracker.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly InternTrackerContext _context;
