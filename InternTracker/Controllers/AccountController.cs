@@ -11,10 +11,13 @@ namespace InternTracker.Controllers
     public class AccountController : Controller
     {
         private readonly InternTrackerContext _context;
+        private readonly bool _allowDemoAdminRegistration;
 
-        public AccountController(InternTrackerContext context)
+        public AccountController(InternTrackerContext context, IWebHostEnvironment environment, IConfiguration configuration)
         {
             _context = context;
+            _allowDemoAdminRegistration = environment.IsDevelopment()
+                && configuration.GetValue<bool>("Demo:EnableAdminRegistration");
         }
 
         [HttpGet]
@@ -131,6 +134,11 @@ namespace InternTracker.Controllers
         [HttpGet]
         public IActionResult RegisterAdmin()
         {
+            if (!_allowDemoAdminRegistration)
+            {
+                return NotFound();
+            }
+
             return View();
         }
 
@@ -138,6 +146,11 @@ namespace InternTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterAdmin(RegisterViewModel model)
         {
+            if (!_allowDemoAdminRegistration)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 var existingUser = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == model.Email);
